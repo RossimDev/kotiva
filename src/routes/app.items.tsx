@@ -138,6 +138,7 @@ function Items() {
           })}
         </div>
       )}
+      <BarcodeScanner open={scanOpen} onOpenChange={setScanOpen} onDetected={(code) => { setForm((f) => ({ ...f, barcode: code })); toast.success(`Código lido: ${code}`); }} />
     </div>
   );
 }
