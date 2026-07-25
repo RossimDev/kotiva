@@ -21,9 +21,11 @@ import { Route as AppShoppingRouteImport } from './routes/app.shopping'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppRecipesRouteImport } from './routes/app.recipes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppItemsRouteImport } from './routes/app.items'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
+import { Route as ApiPublicHooksExpiryAlertsRouteImport } from './routes/api/public/hooks/expiry-alerts'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -85,6 +87,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppItemsRoute = AppItemsRouteImport.update({
   id: '/items',
   path: '/items',
@@ -100,6 +107,12 @@ const AppAdminRoute = AppAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicHooksExpiryAlertsRoute =
+  ApiPublicHooksExpiryAlertsRouteImport.update({
+    id: '/api/public/hooks/expiry-alerts',
+    path: '/api/public/hooks/expiry-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -113,10 +126,12 @@ export interface FileRoutesByFullPath {
   '/app/admin': typeof AppAdminRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/items': typeof AppItemsRoute
+  '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -130,10 +145,12 @@ export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/items': typeof AppItemsRoute
+  '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -148,10 +165,12 @@ export interface FileRoutesById {
   '/app/admin': typeof AppAdminRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/items': typeof AppItemsRoute
+  '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -167,10 +186,12 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/dashboard'
     | '/app/items'
+    | '/app/notifications'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/api/public/hooks/expiry-alerts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -184,10 +205,12 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/dashboard'
     | '/app/items'
+    | '/app/notifications'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/api/public/hooks/expiry-alerts'
   id:
     | '__root__'
     | '/'
@@ -201,10 +224,12 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/dashboard'
     | '/app/items'
+    | '/app/notifications'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/api/public/hooks/expiry-alerts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -216,6 +241,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicHooksExpiryAlertsRoute: typeof ApiPublicHooksExpiryAlertsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -304,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/notifications': {
+      id: '/app/notifications'
+      path: '/notifications'
+      fullPath: '/app/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/items': {
       id: '/app/items'
       path: '/items'
@@ -325,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/hooks/expiry-alerts': {
+      id: '/api/public/hooks/expiry-alerts'
+      path: '/api/public/hooks/expiry-alerts'
+      fullPath: '/api/public/hooks/expiry-alerts'
+      preLoaderRoute: typeof ApiPublicHooksExpiryAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -332,6 +372,7 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppItemsRoute: typeof AppItemsRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppRecipesRoute: typeof AppRecipesRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -342,6 +383,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppItemsRoute: AppItemsRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRoute,
   AppRecipesRoute: AppRecipesRoute,
   AppSettingsRoute: AppSettingsRoute,
@@ -359,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
+  ApiPublicHooksExpiryAlertsRoute: ApiPublicHooksExpiryAlertsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
