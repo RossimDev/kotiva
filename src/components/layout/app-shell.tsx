@@ -1,5 +1,5 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Refrigerator, LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X } from "lucide-react";
+import { Refrigerator, LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X, Bell } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -11,6 +11,7 @@ const nav = [
   { to: "/app/items", icon: Package, label: "Geladeira" },
   { to: "/app/recipes", icon: ChefHat, label: "Receitas IA" },
   { to: "/app/shopping", icon: ShoppingCart, label: "Compras" },
+  { to: "/app/notifications", icon: Bell, label: "Notificações" },
   { to: "/app/profile", icon: User, label: "Perfil" },
   { to: "/app/settings", icon: Settings, label: "Configurações" },
 ] as const;
