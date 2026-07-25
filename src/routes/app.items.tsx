@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Package } from "lucide-react";
+import { Plus, Trash2, Package, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { BarcodeScanner } from "@/components/barcode-scanner";
 
 type Item = { id: string; name: string; category: string | null; quantity: number | null; unit: string | null; barcode: string | null; expires_at: string | null; notes: string | null };
 
@@ -28,6 +29,7 @@ function Items() {
   const { user } = useAuth();
   const [items, setItems] = useState<Item[]>([]);
   const [open, setOpen] = useState(false);
+  const [scanOpen, setScanOpen] = useState(false);
   const [form, setForm] = useState({ name: "", category: "", quantity: "1", unit: "un", barcode: "", expires_at: "", notes: "" });
   const [q, setQ] = useState("");
 
@@ -83,7 +85,13 @@ function Items() {
               <div><Label>Nome *</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Categoria</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Laticínios..." /></div>
-                <div><Label>Código de barras</Label><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} /></div>
+                <div>
+                  <Label>Código de barras</Label>
+                  <div className="flex gap-2">
+                    <Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} />
+                    <Button type="button" size="icon" variant="outline" onClick={() => setScanOpen(true)} aria-label="Escanear"><ScanLine className="h-4 w-4" /></Button>
+                  </div>
+                </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div><Label>Quantidade</Label><Input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></div>
