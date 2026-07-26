@@ -124,6 +124,147 @@ export type Database = {
           },
         ]
       }
+      gas_tanks: {
+        Row: {
+          active: boolean
+          avg_days: number
+          capacity_kg: number
+          created_at: string
+          id: string
+          installed_at: string
+          name: string
+          price: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          avg_days?: number
+          capacity_kg?: number
+          created_at?: string
+          id?: string
+          installed_at?: string
+          name?: string
+          price?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          avg_days?: number
+          capacity_kg?: number
+          created_at?: string
+          id?: string
+          installed_at?: string
+          name?: string
+          price?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      household_bills: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          due_date: string | null
+          due_day: number
+          id: string
+          name: string
+          notes: string | null
+          paid: boolean
+          paid_at: string | null
+          recurring: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category?: string
+          created_at?: string
+          due_date?: string | null
+          due_day?: number
+          id?: string
+          name: string
+          notes?: string | null
+          paid?: boolean
+          paid_at?: string | null
+          recurring?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          due_date?: string | null
+          due_day?: number
+          id?: string
+          name?: string
+          notes?: string | null
+          paid?: boolean
+          paid_at?: string | null
+          recurring?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kitchen_timers: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          seconds: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          seconds?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          seconds?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meal_plans: {
+        Row: {
+          created_at: string
+          id: string
+          plan: Json
+          title: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan?: Json
+          title?: string
+          user_id: string
+          week_start?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan?: Json
+          title?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -224,30 +365,119 @@ export type Database = {
       }
       shopping_items: {
         Row: {
+          barcode: string | null
+          category: string | null
           checked: boolean
           created_at: string
           id: string
+          list_id: string | null
           name: string
+          notes: string | null
           quantity: number | null
           unit: string | null
+          unit_price: number
           user_id: string
         }
         Insert: {
+          barcode?: string | null
+          category?: string | null
           checked?: boolean
           created_at?: string
           id?: string
+          list_id?: string | null
           name: string
+          notes?: string | null
           quantity?: number | null
           unit?: string | null
+          unit_price?: number
           user_id: string
         }
         Update: {
+          barcode?: string | null
+          category?: string | null
           checked?: boolean
           created_at?: string
           id?: string
+          list_id?: string | null
           name?: string
+          notes?: string | null
           quantity?: number | null
           unit?: string | null
+          unit_price?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "shopping_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopping_lists: {
+        Row: {
+          budget: number | null
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget?: number | null
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget?: number | null
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          external_id: string | null
+          id: string
+          plan: string
+          provider: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          external_id?: string | null
+          id?: string
+          plan?: string
+          provider?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          external_id?: string | null
+          id?: string
+          plan?: string
+          provider?: string
+          status?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
