@@ -6,9 +6,9 @@ import { Card } from "@/components/ui/card";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Planos — SmartFridge AI" },
-      { name: "description", content: "Escolha o plano do SmartFridge AI que se encaixa em você. Grátis para começar, premium para quem quer mais." },
-      { property: "og:title", content: "Planos SmartFridge AI" },
+      { title: "Planos — Kotiva" },
+      { name: "description", content: "Escolha o plano do Kotiva que se encaixa em você. Grátis para começar, premium para quem quer mais." },
+      { property: "og:title", content: "Planos Kotiva" },
       { property: "og:description", content: "Grátis, Pro e Família — escolha o que melhor combina com sua rotina." },
     ],
   }),

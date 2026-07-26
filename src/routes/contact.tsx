@@ -12,9 +12,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contato — SmartFridge AI" },
-      { name: "description", content: "Fale com a equipe do SmartFridge AI. Estamos aqui para ajudar você a aproveitar melhor sua cozinha." },
-      { property: "og:title", content: "Contato — SmartFridge AI" },
+      { title: "Contato — Kotiva" },
+      { name: "description", content: "Fale com a equipe do Kotiva. Estamos aqui para ajudar você a aproveitar melhor sua cozinha." },
+      { property: "og:title", content: "Contato — Kotiva" },
       { property: "og:description", content: "Tire suas dúvidas, envie sugestões ou peça suporte." },
     ],
   }),
@@ -49,7 +49,7 @@ function Contact() {
         <h1 className="font-display text-4xl font-extrabold">Vamos conversar</h1>
         <p className="mt-3 text-muted-foreground">Tem dúvidas, sugestões ou precisa de suporte? Envie sua mensagem.</p>
         <div className="mt-8 space-y-4 text-sm">
-          <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-primary" /> contato@smartfridge.ai</div>
+          <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-primary" /> contato@kotiva.ai</div>
           <div className="flex items-center gap-3"><MapPin className="h-4 w-4 text-primary" /> São Paulo, Brasil</div>
         </div>
       </div>

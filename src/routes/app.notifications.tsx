@@ -10,7 +10,7 @@ import { toast } from "sonner";
 type Notif = { id: string; title: string; body: string | null; type: string; read: boolean; created_at: string };
 
 export const Route = createFileRoute("/app/notifications")({
-  head: () => ({ meta: [{ title: "Notificações — SmartFridge AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Notificações — Kotiva" }, { name: "robots", content: "noindex" }] }),
   component: Notifs,
 });
 

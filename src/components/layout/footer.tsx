@@ -13,7 +13,7 @@ export function Footer() {
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-hero text-primary-foreground">
               <Refrigerator className="h-5 w-5" />
             </span>
-            SmartFridge<span className="text-primary">AI</span>
+            Koti<span className="text-primary">va</span>
           </div>
           <p className="text-sm text-muted-foreground">
             Gerencie sua geladeira com inteligência artificial. Menos desperdício, mais receitas.
@@ -43,7 +43,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} SmartFridge AI. Todos os direitos reservados.
+        © {new Date().getFullYear()} Kotiva. Todos os direitos reservados.
       </div>
     </footer>
   );

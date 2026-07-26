@@ -18,8 +18,8 @@ export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Entrar — SmartFridge AI" },
-      { name: "description", content: "Acesse sua conta SmartFridge AI ou crie uma gratuita para começar." },
+      { title: "Entrar — Kotiva" },
+      { name: "description", content: "Acesse sua conta Kotiva ou crie uma gratuita para começar." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -77,7 +77,7 @@ function AuthPage() {
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-hero text-primary-foreground shadow-glow">
             <Refrigerator className="h-5 w-5" />
           </span>
-          SmartFridge<span className="text-primary">AI</span>
+          Koti<span className="text-primary">va</span>
         </Link>
         <Card className="p-8 shadow-soft">
           <h1 className="font-display text-2xl font-bold">{mode === "signup" ? "Criar conta" : "Entrar"}</h1>

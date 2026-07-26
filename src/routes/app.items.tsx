@@ -15,7 +15,7 @@ import { BarcodeScanner } from "@/components/barcode-scanner";
 type Item = { id: string; name: string; category: string | null; quantity: number | null; unit: string | null; barcode: string | null; expires_at: string | null; notes: string | null };
 
 export const Route = createFileRoute("/app/items")({
-  head: () => ({ meta: [{ title: "Geladeira — SmartFridge AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Geladeira — Kotiva" }, { name: "robots", content: "noindex" }] }),
   component: Items,
 });
 

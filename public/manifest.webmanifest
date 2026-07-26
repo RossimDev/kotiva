@@ -1,6 +1,6 @@
 {
-  "name": "SmartFridge AI",
-  "short_name": "SmartFridge",
+  "name": "Kotiva",
+  "short_name": "Kotiva",
   "description": "Sua geladeira mais inteligente: validades, receitas com IA e listas de compras automáticas.",
   "start_url": "/",
   "scope": "/",

@@ -11,7 +11,7 @@ import { suggestRecipes } from "@/lib/ai.functions";
 type Recipe = { title: string; description: string; ingredients: string[]; steps: string[] };
 
 export const Route = createFileRoute("/app/recipes")({
-  head: () => ({ meta: [{ title: "Receitas IA — SmartFridge AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Receitas IA — Kotiva" }, { name: "robots", content: "noindex" }] }),
   component: Recipes,
 });
 

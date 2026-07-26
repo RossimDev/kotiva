@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 type Theme = "light" | "dark";
-const KEY = "smartfridge-theme";
+const KEY = "kotiva-theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");

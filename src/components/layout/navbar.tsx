@@ -28,7 +28,7 @@ export function Navbar() {
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-hero text-primary-foreground shadow-glow">
             <Refrigerator className="h-5 w-5" />
           </span>
-          SmartFridge<span className="text-primary">AI</span>
+          Koti<span className="text-primary">va</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">

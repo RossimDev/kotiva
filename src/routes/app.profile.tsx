@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/profile")({
-  head: () => ({ meta: [{ title: "Perfil — SmartFridge AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Perfil — Kotiva" }, { name: "robots", content: "noindex" }] }),
   component: Profile,
 });
 
