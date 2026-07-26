@@ -20,7 +20,7 @@ export function PWAInstall() {
   return (
     <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full border bg-background/95 px-4 py-2 shadow-soft backdrop-blur">
       <Download className="h-4 w-4 text-primary" />
-      <span className="text-sm">Instale o SmartFridge no seu celular</span>
+      <span className="text-sm">Instale o Kotiva no seu celular</span>
       <Button size="sm" onClick={async () => { await ev.prompt(); setHidden(true); }}>Instalar</Button>
       <button aria-label="Fechar" onClick={() => { localStorage.setItem("pwa-dismissed", "1"); setHidden(true); }}><X className="h-4 w-4 text-muted-foreground" /></button>
     </div>

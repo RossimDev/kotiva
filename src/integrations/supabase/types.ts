@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -42,9 +72,11 @@ export type Database = {
         Row: {
           barcode: string | null
           category: string | null
+          category_id: string | null
           created_at: string
           expires_at: string | null
           id: string
+          manufactured_at: string | null
           name: string
           notes: string | null
           quantity: number | null
@@ -55,9 +87,11 @@ export type Database = {
         Insert: {
           barcode?: string | null
           category?: string | null
+          category_id?: string | null
           created_at?: string
           expires_at?: string | null
           id?: string
+          manufactured_at?: string | null
           name: string
           notes?: string | null
           quantity?: number | null
@@ -68,9 +102,11 @@ export type Database = {
         Update: {
           barcode?: string | null
           category?: string | null
+          category_id?: string | null
           created_at?: string
           expires_at?: string | null
           id?: string
+          manufactured_at?: string | null
           name?: string
           notes?: string | null
           quantity?: number | null
@@ -78,7 +114,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fridge_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -237,6 +281,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      seed_default_categories: {
+        Args: { _user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 type Item = { id: string; name: string; quantity: number | null; unit: string | null; checked: boolean };
 
 export const Route = createFileRoute("/app/shopping")({
-  head: () => ({ meta: [{ title: "Lista de compras — SmartFridge AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Lista de compras — Kotiva" }, { name: "robots", content: "noindex" }] }),
   component: Shopping,
 });
 

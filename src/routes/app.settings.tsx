@@ -9,7 +9,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/settings")({
-  head: () => ({ meta: [{ title: "Configurações — SmartFridge AI" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Configurações — Kotiva" }, { name: "robots", content: "noindex" }] }),
   component: Settings,
 });
 

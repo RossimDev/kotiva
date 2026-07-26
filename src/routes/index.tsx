@@ -6,9 +6,9 @@ import { Card } from "@/components/ui/card";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SmartFridge AI — Sua geladeira inteligente com IA" },
-      { name: "description", content: "Cadastre alimentos, acompanhe validades e receba receitas personalizadas por IA. Reduza o desperdício com o SmartFridge AI." },
-      { property: "og:title", content: "SmartFridge AI — Sua geladeira inteligente" },
+      { title: "Kotiva — Sua geladeira inteligente com IA" },
+      { name: "description", content: "Cadastre alimentos, acompanhe validades e receba receitas personalizadas por IA. Reduza o desperdício com o Kotiva." },
+      { property: "og:title", content: "Kotiva — Sua geladeira inteligente" },
       { property: "og:description", content: "Menos desperdício, mais receitas. Gerencie tudo em um app." },
     ],
   }),

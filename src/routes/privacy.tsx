@@ -3,10 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Política de Privacidade — SmartFridge AI" },
-      { name: "description", content: "Saiba como o SmartFridge AI coleta, usa e protege seus dados pessoais." },
+      { title: "Política de Privacidade — Kotiva" },
+      { name: "description", content: "Saiba como o Kotiva coleta, usa e protege seus dados pessoais." },
       { property: "og:title", content: "Política de Privacidade" },
-      { property: "og:description", content: "Como cuidamos dos seus dados no SmartFridge AI." },
+      { property: "og:description", content: "Como cuidamos dos seus dados no Kotiva." },
     ],
   }),
   component: Privacy,
@@ -26,7 +26,7 @@ function Privacy() {
       <h2 className="mt-6 font-display text-2xl font-bold">4. Seus direitos</h2>
       <p className="text-muted-foreground">Você pode acessar, corrigir ou excluir seus dados a qualquer momento na página de Configurações.</p>
       <h2 className="mt-6 font-display text-2xl font-bold">5. Contato</h2>
-      <p className="text-muted-foreground">Dúvidas? Escreva para privacidade@smartfridge.ai</p>
+      <p className="text-muted-foreground">Dúvidas? Escreva para privacidade@kotiva.ai</p>
     </article>
   );
 }

@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-hero text-primary-foreground shadow-glow">
             <Refrigerator className="h-5 w-5" />
           </span>
-          SmartFridge<span className="text-primary">AI</span>
+          Koti<span className="text-primary">va</span>
         </Link>
         <nav className="space-y-1">
           {nav.map((n) => (
@@ -73,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Mobile top */}
       <div className="flex flex-1 flex-col">
         <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur md:hidden">
-          <Link to="/app/dashboard" className="font-display font-bold">SmartFridge<span className="text-primary">AI</span></Link>
+          <Link to="/app/dashboard" className="font-display font-bold">Koti<span className="text-primary">va</span></Link>
           <Button variant="ghost" size="icon" onClick={() => setOpen((o) => !o)}>
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
