@@ -67,7 +67,7 @@ function Recipes() {
       const res = await genPlan({ data: { ...base, calorieTarget: Number(prefs.calorieTarget) || 2000 } });
       setPlan(res);
       if (user && res.days?.length) {
-        await supabase.from("meal_plans").insert({ user_id: user.id, week_start: isoDate(new Date()), plan: res as unknown as Record<string, unknown> });
+        await supabase.from("meal_plans").insert({ user_id: user.id, week_start: isoDate(new Date()), plan: JSON.parse(JSON.stringify(res)) });
       }
       toast.success("Cardápio de 7 dias pronto!");
     } catch (e) {
