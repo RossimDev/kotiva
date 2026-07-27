@@ -22,7 +22,7 @@ function Privacy() {
       <h2 className="mt-6 font-display text-2xl font-bold">2. Uso dos dados</h2>
       <p className="text-muted-foreground">Usamos seus dados para gerar receitas personalizadas, enviar alertas de validade e melhorar continuamente o produto.</p>
       <h2 className="mt-6 font-display text-2xl font-bold">3. Compartilhamento</h2>
-      <p className="text-muted-foreground">Nunca vendemos seus dados. Compartilhamos apenas com processadores de pagamento (Stripe) e infraestrutura (Lovable Cloud).</p>
+      <p className="text-muted-foreground">Nunca vendemos seus dados. Compartilhamos apenas com processadores de pagamento (Mercado Pago) e infraestrutura (Lovable Cloud).</p>
       <h2 className="mt-6 font-display text-2xl font-bold">4. Seus direitos</h2>
       <p className="text-muted-foreground">Você pode acessar, corrigir ou excluir seus dados a qualquer momento na página de Configurações.</p>
       <h2 className="mt-6 font-display text-2xl font-bold">5. Contato</h2>
