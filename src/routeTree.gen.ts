@@ -24,6 +24,7 @@ import { Route as AppRecipesRouteImport } from './routes/app.recipes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppItemsRouteImport } from './routes/app.items'
+import { Route as AppHouseRouteImport } from './routes/app.house'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiPublicHooksExpiryAlertsRouteImport } from './routes/api/public/hooks/expiry-alerts'
@@ -103,6 +104,11 @@ const AppItemsRoute = AppItemsRouteImport.update({
   path: '/items',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHouseRoute = AppHouseRouteImport.update({
+  id: '/house',
+  path: '/house',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/app/admin': typeof AppAdminRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/app/admin': typeof AppAdminRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/app/admin': typeof AppAdminRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/profile': typeof AppProfileRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/app/admin'
     | '/app/dashboard'
+    | '/app/house'
     | '/app/items'
     | '/app/notifications'
     | '/app/profile'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/app/admin'
     | '/app/dashboard'
+    | '/app/house'
     | '/app/items'
     | '/app/notifications'
     | '/app/profile'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/app/admin'
     | '/app/dashboard'
+    | '/app/house'
     | '/app/items'
     | '/app/notifications'
     | '/app/profile'
@@ -363,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppItemsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/house': {
+      id: '/app/house'
+      path: '/house'
+      fullPath: '/app/house'
+      preLoaderRoute: typeof AppHouseRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/dashboard': {
       id: '/app/dashboard'
       path: '/dashboard'
@@ -390,6 +409,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppHouseRoute: typeof AppHouseRoute
   AppItemsRoute: typeof AppItemsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -402,6 +422,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppHouseRoute: AppHouseRoute,
   AppItemsRoute: AppItemsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRoute,
