@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppStoveRouteImport } from './routes/app.stove'
 import { Route as AppShoppingRouteImport } from './routes/app.shopping'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppRecipesRouteImport } from './routes/app.recipes'
@@ -66,6 +67,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppStoveRoute = AppStoveRouteImport.update({
+  id: '/stove',
+  path: '/stove',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppShoppingRoute = AppShoppingRouteImport.update({
   id: '/shopping',
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
 }
 export interface FileRoutesByTo {
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
 }
 export interface FileRoutesById {
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
 }
 export interface FileRouteTypes {
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
   id:
     | '__root__'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
   fileRoutesById: FileRoutesById
 }
@@ -301,6 +313,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/stove': {
+      id: '/app/stove'
+      path: '/stove'
+      fullPath: '/app/stove'
+      preLoaderRoute: typeof AppStoveRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/shopping': {
       id: '/app/shopping'
@@ -377,6 +396,7 @@ interface AppRouteChildren {
   AppRecipesRoute: typeof AppRecipesRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppShoppingRoute: typeof AppShoppingRoute
+  AppStoveRoute: typeof AppStoveRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -388,6 +408,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppRecipesRoute: AppRecipesRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppShoppingRoute: AppShoppingRoute,
+  AppStoveRoute: AppStoveRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -406,13 +427,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
