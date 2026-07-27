@@ -28,6 +28,7 @@ import { Route as AppHouseRouteImport } from './routes/app.house'
 import { Route as AppGasRouteImport } from './routes/app.gas'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
+import { Route as ApiPublicHooksMercadopagoRouteImport } from './routes/api/public/hooks/mercadopago'
 import { Route as ApiPublicHooksExpiryAlertsRouteImport } from './routes/api/public/hooks/expiry-alerts'
 
 const TermsRoute = TermsRouteImport.update({
@@ -125,6 +126,12 @@ const AppAdminRoute = AppAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicHooksMercadopagoRoute =
+  ApiPublicHooksMercadopagoRouteImport.update({
+    id: '/api/public/hooks/mercadopago',
+    path: '/api/public/hooks/mercadopago',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksExpiryAlertsRoute =
   ApiPublicHooksExpiryAlertsRouteImport.update({
     id: '/api/public/hooks/expiry-alerts',
@@ -153,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/app/shopping': typeof AppShoppingRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
+  '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -175,6 +183,7 @@ export interface FileRoutesByTo {
   '/app/shopping': typeof AppShoppingRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
+  '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -198,6 +207,7 @@ export interface FileRoutesById {
   '/app/shopping': typeof AppShoppingRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
+  '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/app/shopping'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
+    | '/api/public/hooks/mercadopago'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/app/shopping'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
+    | '/api/public/hooks/mercadopago'
   id:
     | '__root__'
     | '/'
@@ -266,6 +278,7 @@ export interface FileRouteTypes {
     | '/app/shopping'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
+    | '/api/public/hooks/mercadopago'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -278,6 +291,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   ApiPublicHooksExpiryAlertsRoute: typeof ApiPublicHooksExpiryAlertsRoute
+  ApiPublicHooksMercadopagoRoute: typeof ApiPublicHooksMercadopagoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -415,6 +429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/hooks/mercadopago': {
+      id: '/api/public/hooks/mercadopago'
+      path: '/api/public/hooks/mercadopago'
+      fullPath: '/api/public/hooks/mercadopago'
+      preLoaderRoute: typeof ApiPublicHooksMercadopagoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/expiry-alerts': {
       id: '/api/public/hooks/expiry-alerts'
       path: '/api/public/hooks/expiry-alerts'
@@ -465,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   ApiPublicHooksExpiryAlertsRoute: ApiPublicHooksExpiryAlertsRoute,
+  ApiPublicHooksMercadopagoRoute: ApiPublicHooksMercadopagoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
