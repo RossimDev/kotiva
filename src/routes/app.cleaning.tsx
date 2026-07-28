@@ -96,7 +96,7 @@ function Cleaning() {
           products,
           risk: res.risk,
           summary: res.summary,
-          details: res as unknown as Record<string, unknown>,
+          details: JSON.parse(JSON.stringify(res)),
         });
       }
     } catch (e) {
