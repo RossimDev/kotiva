@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      cleaning_analyses: {
+        Row: {
+          created_at: string
+          details: Json
+          id: string
+          products: Json
+          risk: string
+          summary: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          id?: string
+          products?: Json
+          risk?: string
+          summary?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          id?: string
+          products?: Json
+          risk?: string
+          summary?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -130,6 +160,7 @@ export type Database = {
           avg_days: number
           capacity_kg: number
           created_at: string
+          emptied_at: string | null
           id: string
           installed_at: string
           name: string
@@ -142,6 +173,7 @@ export type Database = {
           avg_days?: number
           capacity_kg?: number
           created_at?: string
+          emptied_at?: string | null
           id?: string
           installed_at?: string
           name?: string
@@ -154,6 +186,7 @@ export type Database = {
           avg_days?: number
           capacity_kg?: number
           created_at?: string
+          emptied_at?: string | null
           id?: string
           installed_at?: string
           name?: string
@@ -218,6 +251,8 @@ export type Database = {
           id: string
           name: string
           seconds: number
+          sort_order: number
+          sound: string | null
           user_id: string
         }
         Insert: {
@@ -226,6 +261,8 @@ export type Database = {
           id?: string
           name: string
           seconds?: number
+          sort_order?: number
+          sound?: string | null
           user_id: string
         }
         Update: {
@@ -234,6 +271,8 @@ export type Database = {
           id?: string
           name?: string
           seconds?: number
+          sort_order?: number
+          sound?: string | null
           user_id?: string
         }
         Relationships: []
@@ -308,6 +347,140 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pet_reminders: {
+        Row: {
+          active: boolean
+          created_at: string
+          due_date: string | null
+          id: string
+          last_done_at: string | null
+          pet_id: string
+          repeat_rule: string
+          time_of_day: string | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          last_done_at?: string | null
+          pet_id: string
+          repeat_rule?: string
+          time_of_day?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          last_done_at?: string | null
+          pet_id?: string
+          repeat_rule?: string
+          time_of_day?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_reminders_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pets: {
+        Row: {
+          age_months: number | null
+          breed: string | null
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          sex: string | null
+          size: string | null
+          species: string
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          age_months?: number | null
+          breed?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          sex?: string | null
+          size?: string | null
+          species?: string
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          age_months?: number | null
+          breed?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          sex?: string | null
+          size?: string | null
+          species?: string
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      product_catalog: {
+        Row: {
+          barcode: string
+          brand: string | null
+          category: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          package: string | null
+          updated_at: string
+        }
+        Insert: {
+          barcode: string
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          package?: string | null
+          updated_at?: string
+        }
+        Update: {
+          barcode?: string
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          package?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
