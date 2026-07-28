@@ -22,11 +22,13 @@ import { Route as AppShoppingRouteImport } from './routes/app.shopping'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppRecipesRouteImport } from './routes/app.recipes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppPetsRouteImport } from './routes/app.pets'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppItemsRouteImport } from './routes/app.items'
 import { Route as AppHouseRouteImport } from './routes/app.house'
 import { Route as AppGasRouteImport } from './routes/app.gas'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppCleaningRouteImport } from './routes/app.cleaning'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
 import { Route as ApiPublicHooksMercadopagoRouteImport } from './routes/api/public/hooks/mercadopago'
 import { Route as ApiPublicHooksExpiryAlertsRouteImport } from './routes/api/public/hooks/expiry-alerts'
@@ -96,6 +98,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPetsRoute = AppPetsRouteImport.update({
+  id: '/pets',
+  path: '/pets',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppNotificationsRoute = AppNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -119,6 +126,11 @@ const AppGasRoute = AppGasRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCleaningRoute = AppCleaningRouteImport.update({
+  id: '/cleaning',
+  path: '/cleaning',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminRoute = AppAdminRouteImport.update({
@@ -149,11 +161,13 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/app/admin': typeof AppAdminRoute
+  '/app/cleaning': typeof AppCleaningRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/gas': typeof AppGasRoute
   '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
@@ -172,11 +186,13 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/app/admin': typeof AppAdminRoute
+  '/app/cleaning': typeof AppCleaningRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/gas': typeof AppGasRoute
   '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
@@ -196,11 +212,13 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/app/admin': typeof AppAdminRoute
+  '/app/cleaning': typeof AppCleaningRoute
   '/app/dashboard': typeof AppDashboardRoute
   '/app/gas': typeof AppGasRoute
   '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
+  '/app/pets': typeof AppPetsRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
@@ -221,11 +239,13 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/app/admin'
+    | '/app/cleaning'
     | '/app/dashboard'
     | '/app/gas'
     | '/app/house'
     | '/app/items'
     | '/app/notifications'
+    | '/app/pets'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
@@ -244,11 +264,13 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/app/admin'
+    | '/app/cleaning'
     | '/app/dashboard'
     | '/app/gas'
     | '/app/house'
     | '/app/items'
     | '/app/notifications'
+    | '/app/pets'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
@@ -267,11 +289,13 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/app/admin'
+    | '/app/cleaning'
     | '/app/dashboard'
     | '/app/gas'
     | '/app/house'
     | '/app/items'
     | '/app/notifications'
+    | '/app/pets'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
@@ -387,6 +411,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/pets': {
+      id: '/app/pets'
+      path: '/pets'
+      fullPath: '/app/pets'
+      preLoaderRoute: typeof AppPetsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/notifications': {
       id: '/app/notifications'
       path: '/notifications'
@@ -422,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/cleaning': {
+      id: '/app/cleaning'
+      path: '/cleaning'
+      fullPath: '/app/cleaning'
+      preLoaderRoute: typeof AppCleaningRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/admin': {
       id: '/app/admin'
       path: '/admin'
@@ -448,11 +486,13 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
+  AppCleaningRoute: typeof AppCleaningRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppGasRoute: typeof AppGasRoute
   AppHouseRoute: typeof AppHouseRoute
   AppItemsRoute: typeof AppItemsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
+  AppPetsRoute: typeof AppPetsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppRecipesRoute: typeof AppRecipesRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -462,11 +502,13 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
+  AppCleaningRoute: AppCleaningRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppGasRoute: AppGasRoute,
   AppHouseRoute: AppHouseRoute,
   AppItemsRoute: AppItemsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
+  AppPetsRoute: AppPetsRoute,
   AppProfileRoute: AppProfileRoute,
   AppRecipesRoute: AppRecipesRoute,
   AppSettingsRoute: AppSettingsRoute,
@@ -491,13 +533,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
