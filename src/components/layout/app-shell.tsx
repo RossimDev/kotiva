@@ -1,5 +1,5 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Refrigerator, LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X, Bell, Timer, Home, Flame, Sparkles, PawPrint } from "lucide-react";
+import { Refrigerator, LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X, Bell, Timer, Home, Flame, Sparkles, PawPrint, Wallet } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -14,6 +14,7 @@ const nav = [
   { to: "/app/stove", icon: Timer, label: "Fogão" },
   { to: "/app/house", icon: Home, label: "Casa" },
   { to: "/app/gas", icon: Flame, label: "Botijão" },
+  { to: "/app/finance", icon: Wallet, label: "Financeiro" },
   { to: "/app/cleaning", icon: Sparkles, label: "Limpeza IA" },
   { to: "/app/pets", icon: PawPrint, label: "Pet IA" },
   { to: "/app/notifications", icon: Bell, label: "Notificações" },
