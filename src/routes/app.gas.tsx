@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Flame, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Flame, Plus, RefreshCw, Trash2, CircleOff, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { money, daysBetween, addDays, isoDate } from "@/lib/kotiva";
 
 export const Route = createFileRoute("/app/gas")({
-  head: () => ({ meta: [{ title: "Botijão Inteligente — Kotiva" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Botijão Inteligente — Kotiva" },
+      { name: "description", content: "Controle o consumo de gás, veja o nível estimado, histórico de trocas e custo por dia." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: Gas,
 });
 
@@ -21,6 +28,7 @@ type Tank = {
   name: string;
   capacity_kg: number;
   installed_at: string;
+  emptied_at: string | null;
   avg_days: number;
   price: number | null;
   active: boolean;
@@ -34,8 +42,8 @@ function Gas() {
   const load = () =>
     supabase
       .from("gas_tanks")
-      .select("id,name,capacity_kg,installed_at,avg_days,price,active")
-      .order("created_at", { ascending: false })
+      .select("id,name,capacity_kg,installed_at,emptied_at,avg_days,price,active")
+      .order("installed_at", { ascending: false })
       .then(({ data }) => setTanks((data ?? []) as Tank[]));
 
   useEffect(() => {
@@ -44,15 +52,37 @@ function Gas() {
 
   const current = useMemo(() => tanks.find((t) => t.active) ?? null, [tanks]);
 
+  /** Histórico com duração real (dias entre instalação e fim do gás). */
+  const history = useMemo(
+    () =>
+      tanks
+        .filter((t) => t.emptied_at)
+        .map((t) => ({
+          id: t.id,
+          label: new Date(`${t.installed_at}T00:00:00`).toLocaleDateString("pt-BR", { month: "short", year: "2-digit" }),
+          dias: Math.max(1, daysBetween(t.installed_at, new Date(`${t.emptied_at}T00:00:00`))),
+          preco: Number(t.price ?? 0),
+        }))
+        .reverse(),
+    [tanks],
+  );
+
+  const realAvg = useMemo(
+    () => (history.length ? Math.round(history.reduce((s, h) => s + h.dias, 0) / history.length) : null),
+    [history],
+  );
+
   const status = useMemo(() => {
     if (!current) return null;
+    const base = realAvg ?? current.avg_days;
     const used = Math.max(0, daysBetween(current.installed_at));
-    const pct = Math.max(0, Math.min(100, 100 - (used / current.avg_days) * 100));
-    const left = Math.max(0, current.avg_days - used);
-    const endDate = addDays(new Date(`${current.installed_at}T00:00:00`), current.avg_days);
-    const costDay = current.price ? Number(current.price) / current.avg_days : 0;
-    return { used, pct, left, endDate, costDay };
-  }, [current]);
+    const pct = Math.max(0, Math.min(100, 100 - (used / base) * 100));
+    const left = Math.max(0, base - used);
+    const endDate = addDays(new Date(`${current.installed_at}T00:00:00`), base);
+    const costDay = current.price ? Number(current.price) / base : 0;
+    const kgDay = current.capacity_kg / base;
+    return { used, pct, left, endDate, costDay, base, kgDay };
+  }, [current, realAvg]);
 
   const add = async () => {
     if (!user) return;
@@ -68,6 +98,21 @@ function Gas() {
     });
     if (error) return toast.error(error.message);
     toast.success("Botijão registrado!");
+    load();
+  };
+
+  /** Marca o botijão atual como vazio e calcula a duração exata. */
+  const markEmpty = async () => {
+    if (!current) return;
+    const today = isoDate(new Date());
+    const realDays = Math.max(1, daysBetween(current.installed_at, new Date()));
+    const { error } = await supabase
+      .from("gas_tanks")
+      .update({ emptied_at: today, avg_days: realDays, active: false })
+      .eq("id", current.id);
+    if (error) return toast.error(error.message);
+    toast.success(`Botijão durou exatamente ${realDays} dias. Registre o novo abaixo.`);
+    setForm((f) => ({ ...f, installed_at: today, avg_days: String(realDays) }));
     load();
   };
 
@@ -95,9 +140,14 @@ function Gas() {
                 <div className="text-xs text-muted-foreground">{current.capacity_kg} kg • instalado em {new Date(`${current.installed_at}T00:00:00`).toLocaleDateString("pt-BR")}</div>
               </div>
             </div>
-            <Badge variant={status.pct > 20 ? "secondary" : "destructive"}>
-              {status.left > 0 ? `~${status.left} dias restantes` : "Provavelmente vazio"}
-            </Badge>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant={status.pct > 20 ? "secondary" : "destructive"}>
+                {status.left > 0 ? `~${status.left} dias restantes` : "Provavelmente vazio"}
+              </Badge>
+              <Button size="sm" variant="destructive" onClick={markEmpty}>
+                <CircleOff className="mr-2 h-4 w-4" /> O gás acabou
+              </Button>
+            </div>
           </div>
 
           <div className="mt-5">
@@ -108,21 +158,16 @@ function Gas() {
             <div className="h-4 rounded-full bg-muted">
               <div className={`h-4 rounded-full transition-all ${barColor}`} style={{ width: `${status.pct}%` }} />
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Base de cálculo: {status.base} dias {realAvg ? "(média real das suas trocas)" : "(estimativa informada)"} • consumo ~{status.kgDay.toFixed(2)} kg/dia
+            </p>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl bg-muted/50 p-3 text-center">
-              <div className="font-display text-xl font-bold">{status.used}</div>
-              <div className="text-xs text-muted-foreground">dias de uso</div>
-            </div>
-            <div className="rounded-xl bg-muted/50 p-3 text-center">
-              <div className="font-display text-xl font-bold">{status.endDate.toLocaleDateString("pt-BR")}</div>
-              <div className="text-xs text-muted-foreground">troca prevista</div>
-            </div>
-            <div className="rounded-xl bg-muted/50 p-3 text-center">
-              <div className="font-display text-xl font-bold">{money(status.costDay)}</div>
-              <div className="text-xs text-muted-foreground">custo por dia</div>
-            </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-4">
+            <Stat value={String(status.used)} label="dias de uso" />
+            <Stat value={String(status.left)} label="dias restantes" />
+            <Stat value={status.endDate.toLocaleDateString("pt-BR")} label="troca prevista" />
+            <Stat value={money(status.costDay)} label="custo por dia" />
           </div>
 
           {status.pct <= 20 && (
@@ -132,7 +177,7 @@ function Gas() {
           )}
         </Card>
       ) : (
-        <Card className="p-10 text-center text-muted-foreground">Nenhum botijão ativo. Registre o primeiro abaixo.</Card>
+        <Card className="p-10 text-center text-muted-foreground">Nenhum botijão ativo. Registre o novo botijão abaixo.</Card>
       )}
 
       <Card className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6">
@@ -161,6 +206,24 @@ function Gas() {
         </div>
       </Card>
 
+      {history.length > 0 && (
+        <Card className="p-5">
+          <h2 className="flex items-center gap-2 font-display text-lg font-bold"><TrendingUp className="h-4 w-4" /> Duração real por botijão</h2>
+          <p className="text-xs text-muted-foreground">Média real de {realAvg} dias • custo médio {money(history.reduce((s, h) => s + h.preco, 0) / history.length)}</p>
+          <div className="mt-4 h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={history}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
+                <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
+                <YAxis tickLine={false} axisLine={false} fontSize={12} width={30} />
+                <Tooltip formatter={(v: number) => [`${v} dias`, "Duração"]} contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))" }} />
+                <Bar dataKey="dias" radius={[8, 8, 0, 0]} fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
       <Card className="p-5">
         <h2 className="flex items-center gap-2 font-display text-lg font-bold"><RefreshCw className="h-4 w-4" /> Histórico de trocas</h2>
         {tanks.length === 0 ? (
@@ -172,15 +235,26 @@ function Gas() {
                 <div>
                   <div className="font-medium">{t.name} {t.active && <Badge className="ml-2" variant="secondary">Ativo</Badge>}</div>
                   <div className="text-xs text-muted-foreground">
-                    {new Date(`${t.installed_at}T00:00:00`).toLocaleDateString("pt-BR")} • {t.capacity_kg} kg • {t.price ? money(t.price) : "sem preço"}
+                    {new Date(`${t.installed_at}T00:00:00`).toLocaleDateString("pt-BR")}
+                    {t.emptied_at && ` → ${new Date(`${t.emptied_at}T00:00:00`).toLocaleDateString("pt-BR")} (${Math.max(1, daysBetween(t.installed_at, new Date(`${t.emptied_at}T00:00:00`)))} dias)`}
+                    {" • "}{t.capacity_kg} kg • {t.price ? money(t.price) : "sem preço"}
                   </div>
                 </div>
-                <Button size="sm" variant="ghost" onClick={() => remove(t.id)}><Trash2 className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost" onClick={() => remove(t.id)} aria-label="Excluir registro"><Trash2 className="h-4 w-4" /></Button>
               </li>
             ))}
           </ul>
         )}
       </Card>
+    </div>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-xl bg-muted/50 p-3 text-center">
+      <div className="font-display text-xl font-bold">{value}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
     </div>
   );
 }
