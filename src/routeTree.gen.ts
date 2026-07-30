@@ -27,6 +27,7 @@ import { Route as AppNotificationsRouteImport } from './routes/app.notifications
 import { Route as AppItemsRouteImport } from './routes/app.items'
 import { Route as AppHouseRouteImport } from './routes/app.house'
 import { Route as AppGasRouteImport } from './routes/app.gas'
+import { Route as AppFinanceRouteImport } from './routes/app.finance'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppCleaningRouteImport } from './routes/app.cleaning'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
@@ -123,6 +124,11 @@ const AppGasRoute = AppGasRouteImport.update({
   path: '/gas',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFinanceRoute = AppFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/app/admin': typeof AppAdminRoute
   '/app/cleaning': typeof AppCleaningRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/finance': typeof AppFinanceRoute
   '/app/gas': typeof AppGasRoute
   '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/app/admin': typeof AppAdminRoute
   '/app/cleaning': typeof AppCleaningRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/finance': typeof AppFinanceRoute
   '/app/gas': typeof AppGasRoute
   '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/app/admin': typeof AppAdminRoute
   '/app/cleaning': typeof AppCleaningRoute
   '/app/dashboard': typeof AppDashboardRoute
+  '/app/finance': typeof AppFinanceRoute
   '/app/gas': typeof AppGasRoute
   '/app/house': typeof AppHouseRoute
   '/app/items': typeof AppItemsRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/cleaning'
     | '/app/dashboard'
+    | '/app/finance'
     | '/app/gas'
     | '/app/house'
     | '/app/items'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/cleaning'
     | '/app/dashboard'
+    | '/app/finance'
     | '/app/gas'
     | '/app/house'
     | '/app/items'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/app/admin'
     | '/app/cleaning'
     | '/app/dashboard'
+    | '/app/finance'
     | '/app/gas'
     | '/app/house'
     | '/app/items'
@@ -446,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGasRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/finance': {
+      id: '/app/finance'
+      path: '/finance'
+      fullPath: '/app/finance'
+      preLoaderRoute: typeof AppFinanceRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/dashboard': {
       id: '/app/dashboard'
       path: '/dashboard'
@@ -488,6 +507,7 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppCleaningRoute: typeof AppCleaningRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppFinanceRoute: typeof AppFinanceRoute
   AppGasRoute: typeof AppGasRoute
   AppHouseRoute: typeof AppHouseRoute
   AppItemsRoute: typeof AppItemsRoute
@@ -504,6 +524,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppCleaningRoute: AppCleaningRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppFinanceRoute: AppFinanceRoute,
   AppGasRoute: AppGasRoute,
   AppHouseRoute: AppHouseRoute,
   AppItemsRoute: AppItemsRoute,
