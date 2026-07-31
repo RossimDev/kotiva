@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Package, AlertTriangle, ChefHat, ShoppingCart, Wallet, Flame, Timer, Home, Bell } from "lucide-react";
+import { Package, AlertTriangle, ChefHat, ShoppingCart, Wallet, Flame, Timer, Home, Bell, ClipboardList, BrainCircuit } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,6 +74,42 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Card Saldo — layout do exemplo */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#5B4DFF] via-[#6D48F2] to-[#7C3AED] p-7 shadow-2xl shadow-[#5B4DFF]/30">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-sm font-medium text-white/80">Saldo do mês</h2>
+            <div className="mt-1 font-display text-4xl font-extrabold tracking-tight text-white">R$ 2.345,67</div>
+            <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-white/70">
+              <Wallet className="h-3.5 w-3.5" /> Controle financeiro
+            </div>
+          </div>
+          <div className="relative h-20 w-20 shrink-0">
+            <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="10" />
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#F59E0B" strokeWidth="10" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="60" />
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#22C55E" strokeWidth="10" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="100" />
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#5B4DFF" strokeWidth="10" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="160" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      {/* 4 Botões inferiores — layout do exemplo */}
+      <section className="grid grid-cols-4 gap-3">
+        {[
+          { icon: ShoppingCart, label: "Compras", to: "/app/shopping", color: "from-[#5B4DFF] to-[#7C3AED]" },
+          { icon: ClipboardList, label: "Tarefas", to: "/app/notifications", color: "from-[#7C3AED] to-[#5B4DFF]" },
+          { icon: Wallet, label: "Finanças", to: "/app/house", color: "from-[#F59E0B] to-[#F97316]" },
+          { icon: BrainCircuit, label: "IA Assistente", to: "/app/recipes", color: "from-[#22C55E] to-[#16A34A]" },
+        ].map((b) => (
+          <Link key={b.label} to={b.to} className={`flex flex-col items-center gap-2 rounded-2xl bg-gradient-to-br ${b.color} p-4 shadow-lg shadow-black/20 transition-transform hover:-translate-y-1 hover:shadow-xl`}>
+            <div className="grid h-12 w-12 place-items-center rounded-full bg-white/10 backdrop-blur"><b.icon className="h-6 w-6 text-white" /></div>
+            <span className="text-xs font-semibold text-white">{b.label}</span>
+          </Link>
+        ))}
+      </section>
+
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-extrabold">Olá 👋</h1>
