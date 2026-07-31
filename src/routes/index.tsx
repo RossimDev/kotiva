@@ -6,22 +6,22 @@ import { Card } from "@/components/ui/card";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kotiva — Sua geladeira inteligente com IA" },
-      { name: "description", content: "Cadastre alimentos, acompanhe validades e receba receitas personalizadas por IA. Reduza o desperdício com o Kotiva." },
-      { property: "og:title", content: "Kotiva — Sua geladeira inteligente" },
-      { property: "og:description", content: "Menos desperdício, mais receitas. Gerencie tudo em um app." },
+      { title: "Kotiva — A inteligência completa da sua casa" },
+      { name: "description", content: "Finanças, refeições, tarefas e organização da casa em um só app inteligente, elegante e feito para você. Menos desperdício, mais praticidade, mais vida." },
+      { property: "og:title", content: "Kotiva — A inteligência completa da sua casa" },
+      { property: "og:description", content: "Organize finanças, planeje refeições, controle tarefas e gerencie sua casa com um único app inteligente, elegante e feito para você." },
     ],
   }),
   component: Home,
 });
 
 const features = [
-  { icon: ScanLine, title: "Código de barras / QR", desc: "Cadastre em segundos escaneando produtos direto da embalagem." },
-  { icon: Bell, title: "Alertas de validade", desc: "Notificações inteligentes antes que algo estrague na sua geladeira." },
-  { icon: ChefHat, title: "Receitas com IA", desc: "Sugestões personalizadas com base no que você já tem em casa." },
-  { icon: ShoppingCart, title: "Listas automáticas", desc: "Gere listas de compras a partir do que está acabando." },
-  { icon: Leaf, title: "Menos desperdício", desc: "Contribua com o planeta usando o que já comprou." },
-  { icon: Sparkles, title: "Experiência premium", desc: "Design moderno, rápido e responsivo em qualquer dispositivo." },
+  { icon: ScanLine, title: "Geladeira Inteligente", desc: "Cadastre alimentos, escaneie códigos de barras e acompanhe validades com alertas automáticos." },
+  { icon: Bell, title: "Receitas com IA", desc: "Sugestões personalizadas baseadas no que você já tem em casa, reduzindo desperdício." },
+  { icon: ChefHat, title: "Planejamento de Refeições", desc: "Organize cardápios semanais e listas de compras automáticas a partir do estoque." },
+  { icon: ShoppingCart, title: "Finanças Domésticas", desc: "Controle gastos de mercado, conta de luz, gás e orçamento mensal em um só lugar." },
+  { icon: Leaf, title: "Tarefas da Casa", desc: "Crie lembretes de limpeza, manutenção e organização para que nada fique para depois." },
+  { icon: Sparkles, title: "Experiência Premium", desc: "Design moderno, rápido e responsivo — uma marca que transmite confiança e sofisticação." },
 ];
 
 function Home() {
@@ -36,11 +36,11 @@ function Home() {
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" /> Powered by IA
             </div>
-            <h1 className="mt-4 font-display text-5xl font-extrabold leading-tight md:text-6xl">
-              Sua geladeira <span className="text-gradient">mais inteligente</span> que nunca
+            <h1 className="mt-4 font-display text-5xl font-extrabold leading-tight md:text-7xl">
+              Sua casa, <span className="text-gradient">mais inteligente</span> que nunca
             </h1>
-            <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-              Cadastre alimentos, acompanhe validades e ganhe receitas personalizadas com IA. Chega de desperdício.
+            <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+              Finanças organizadas, refeições planejadas, tarefas no controle e uma casa que funciona para você — tudo em um app elegante e feito sob medida.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="shadow-glow">
@@ -68,14 +68,14 @@ function Home() {
                 </div>
               </div>
               <div className="space-y-3">
-                {["🍅 Tomate — vence em 2 dias", "🥑 Abacate — vence hoje", "🥬 Alface — nova"].map((t) => (
+                {["🍅 Tomate — vence em 2 dias", "💰 Conta de luz — vencimento 05/08", "🧹 Tarefa: limpar geladeira", "🥑 Abacate — vence hoje"].map((t) => (
                   <div key={t} className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2 text-sm">
                     <span>{t}</span>
                   </div>
                 ))}
                 <div className="mt-3 rounded-xl bg-hero p-4 text-primary-foreground">
-                  <div className="text-xs opacity-80">Receita sugerida</div>
-                  <div className="font-display text-lg font-bold">Guacamole + salada fresca</div>
+                  <div className="text-xs opacity-80">Sugestão inteligente do Kotiva</div>
+                  <div className="font-display text-lg font-bold">Guacamole + salada fresca + controle de gastos</div>
                 </div>
               </div>
             </div>

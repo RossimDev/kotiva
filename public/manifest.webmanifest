@@ -1,13 +1,13 @@
 {
   "name": "Kotiva",
   "short_name": "Kotiva",
-  "description": "Sua geladeira mais inteligente: validades, receitas com IA e listas de compras automáticas.",
+  "description": "A inteligência completa da sua casa: finanças, refeições, tarefas e organização em um só app elegante.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#fff7ed",
-  "theme_color": "#f97316",
+  "background_color": "#F8F6F2",
+  "theme_color": "#C5A059",
   "icons": [
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }

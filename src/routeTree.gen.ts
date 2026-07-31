@@ -9,59 +9,34 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppStoveRouteImport } from './routes/app.stove'
-import { Route as AppShoppingRouteImport } from './routes/app.shopping'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppRecipesRouteImport } from './routes/app.recipes'
-import { Route as AppProfileRouteImport } from './routes/app.profile'
-import { Route as AppPetsRouteImport } from './routes/app.pets'
-import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
-import { Route as AppItemsRouteImport } from './routes/app.items'
-import { Route as AppHouseRouteImport } from './routes/app.house'
-import { Route as AppGasRouteImport } from './routes/app.gas'
-import { Route as AppFinanceRouteImport } from './routes/app.finance'
-import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
-import { Route as AppCleaningRouteImport } from './routes/app.cleaning'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AppAdminRouteImport } from './routes/app.admin'
-import { Route as ApiPublicHooksMercadopagoRouteImport } from './routes/api/public/hooks/mercadopago'
+import { Route as AppCleaningRouteImport } from './routes/app.cleaning'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppFinanceRouteImport } from './routes/app.finance'
+import { Route as AppGasRouteImport } from './routes/app.gas'
+import { Route as AppHouseRouteImport } from './routes/app.house'
+import { Route as AppItemsRouteImport } from './routes/app.items'
+import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
+import { Route as AppPetsRouteImport } from './routes/app.pets'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppRecipesRouteImport } from './routes/app.recipes'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppShoppingRouteImport } from './routes/app.shopping'
+import { Route as AppStoveRouteImport } from './routes/app.stove'
 import { Route as ApiPublicHooksExpiryAlertsRouteImport } from './routes/api/public/hooks/expiry-alerts'
+import { Route as ApiPublicHooksMercadopagoRouteImport } from './routes/api/public/hooks/mercadopago'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -69,69 +44,39 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppStoveRoute = AppStoveRouteImport.update({
-  id: '/stove',
-  path: '/stove',
-  getParentRoute: () => AppRoute,
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppShoppingRoute = AppShoppingRouteImport.update({
-  id: '/shopping',
-  path: '/shopping',
-  getParentRoute: () => AppRoute,
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppRecipesRoute = AppRecipesRouteImport.update({
-  id: '/recipes',
-  path: '/recipes',
-  getParentRoute: () => AppRoute,
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppRoute,
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppPetsRoute = AppPetsRouteImport.update({
-  id: '/pets',
-  path: '/pets',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppNotificationsRoute = AppNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppItemsRoute = AppItemsRouteImport.update({
-  id: '/items',
-  path: '/items',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppHouseRoute = AppHouseRouteImport.update({
-  id: '/house',
-  path: '/house',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGasRoute = AppGasRouteImport.update({
-  id: '/gas',
-  path: '/gas',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppFinanceRoute = AppFinanceRouteImport.update({
-  id: '/finance',
-  path: '/finance',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCleaningRoute = AppCleaningRouteImport.update({
@@ -139,21 +84,76 @@ const AppCleaningRoute = AppCleaningRouteImport.update({
   path: '/cleaning',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminRoute = AppAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiPublicHooksMercadopagoRoute =
-  ApiPublicHooksMercadopagoRouteImport.update({
-    id: '/api/public/hooks/mercadopago',
-    path: '/api/public/hooks/mercadopago',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const AppFinanceRoute = AppFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGasRoute = AppGasRouteImport.update({
+  id: '/gas',
+  path: '/gas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHouseRoute = AppHouseRouteImport.update({
+  id: '/house',
+  path: '/house',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppItemsRoute = AppItemsRouteImport.update({
+  id: '/items',
+  path: '/items',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPetsRoute = AppPetsRouteImport.update({
+  id: '/pets',
+  path: '/pets',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRecipesRoute = AppRecipesRouteImport.update({
+  id: '/recipes',
+  path: '/recipes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppShoppingRoute = AppShoppingRouteImport.update({
+  id: '/shopping',
+  path: '/shopping',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStoveRoute = AppStoveRouteImport.update({
+  id: '/stove',
+  path: '/stove',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiPublicHooksExpiryAlertsRoute =
   ApiPublicHooksExpiryAlertsRouteImport.update({
     id: '/api/public/hooks/expiry-alerts',
     path: '/api/public/hooks/expiry-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksMercadopagoRoute =
+  ApiPublicHooksMercadopagoRouteImport.update({
+    id: '/api/public/hooks/mercadopago',
+    path: '/api/public/hooks/mercadopago',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -332,46 +332,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -381,95 +346,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/stove': {
-      id: '/app/stove'
-      path: '/stove'
-      fullPath: '/app/stove'
-      preLoaderRoute: typeof AppStoveRouteImport
-      parentRoute: typeof AppRoute
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/shopping': {
-      id: '/app/shopping'
-      path: '/shopping'
-      fullPath: '/app/shopping'
-      preLoaderRoute: typeof AppShoppingRouteImport
-      parentRoute: typeof AppRoute
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/recipes': {
-      id: '/app/recipes'
-      path: '/recipes'
-      fullPath: '/app/recipes'
-      preLoaderRoute: typeof AppRecipesRouteImport
-      parentRoute: typeof AppRoute
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/profile': {
-      id: '/app/profile'
-      path: '/profile'
-      fullPath: '/app/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/pets': {
-      id: '/app/pets'
-      path: '/pets'
-      fullPath: '/app/pets'
-      preLoaderRoute: typeof AppPetsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/notifications': {
-      id: '/app/notifications'
-      path: '/notifications'
-      fullPath: '/app/notifications'
-      preLoaderRoute: typeof AppNotificationsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/items': {
-      id: '/app/items'
-      path: '/items'
-      fullPath: '/app/items'
-      preLoaderRoute: typeof AppItemsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/house': {
-      id: '/app/house'
-      path: '/house'
-      fullPath: '/app/house'
-      preLoaderRoute: typeof AppHouseRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/gas': {
-      id: '/app/gas'
-      path: '/gas'
-      fullPath: '/app/gas'
-      preLoaderRoute: typeof AppGasRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/finance': {
-      id: '/app/finance'
-      path: '/finance'
-      fullPath: '/app/finance'
-      preLoaderRoute: typeof AppFinanceRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/dashboard': {
-      id: '/app/dashboard'
-      path: '/dashboard'
-      fullPath: '/app/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
+    '/app/admin': {
+      id: '/app/admin'
+      path: '/admin'
+      fullPath: '/app/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/cleaning': {
@@ -479,25 +402,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCleaningRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/admin': {
-      id: '/app/admin'
-      path: '/admin'
-      fullPath: '/app/admin'
-      preLoaderRoute: typeof AppAdminRouteImport
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/public/hooks/mercadopago': {
-      id: '/api/public/hooks/mercadopago'
-      path: '/api/public/hooks/mercadopago'
-      fullPath: '/api/public/hooks/mercadopago'
-      preLoaderRoute: typeof ApiPublicHooksMercadopagoRouteImport
-      parentRoute: typeof rootRouteImport
+    '/app/finance': {
+      id: '/app/finance'
+      path: '/finance'
+      fullPath: '/app/finance'
+      preLoaderRoute: typeof AppFinanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/gas': {
+      id: '/app/gas'
+      path: '/gas'
+      fullPath: '/app/gas'
+      preLoaderRoute: typeof AppGasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/house': {
+      id: '/app/house'
+      path: '/house'
+      fullPath: '/app/house'
+      preLoaderRoute: typeof AppHouseRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/items': {
+      id: '/app/items'
+      path: '/items'
+      fullPath: '/app/items'
+      preLoaderRoute: typeof AppItemsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/notifications': {
+      id: '/app/notifications'
+      path: '/notifications'
+      fullPath: '/app/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/pets': {
+      id: '/app/pets'
+      path: '/pets'
+      fullPath: '/app/pets'
+      preLoaderRoute: typeof AppPetsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/recipes': {
+      id: '/app/recipes'
+      path: '/recipes'
+      fullPath: '/app/recipes'
+      preLoaderRoute: typeof AppRecipesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/shopping': {
+      id: '/app/shopping'
+      path: '/shopping'
+      fullPath: '/app/shopping'
+      preLoaderRoute: typeof AppShoppingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/stove': {
+      id: '/app/stove'
+      path: '/stove'
+      fullPath: '/app/stove'
+      preLoaderRoute: typeof AppStoveRouteImport
+      parentRoute: typeof AppRoute
     }
     '/api/public/hooks/expiry-alerts': {
       id: '/api/public/hooks/expiry-alerts'
       path: '/api/public/hooks/expiry-alerts'
       fullPath: '/api/public/hooks/expiry-alerts'
       preLoaderRoute: typeof ApiPublicHooksExpiryAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/mercadopago': {
+      id: '/api/public/hooks/mercadopago'
+      path: '/api/public/hooks/mercadopago'
+      fullPath: '/api/public/hooks/mercadopago'
+      preLoaderRoute: typeof ApiPublicHooksMercadopagoRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -554,3 +554,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

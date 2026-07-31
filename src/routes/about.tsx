@@ -5,9 +5,9 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "Sobre — Kotiva" },
-      { name: "description", content: "Conheça a missão do Kotiva: menos desperdício, mais praticidade e uma experiência premium para sua cozinha." },
+      { name: "description", content: "Conheça a missão do Kotiva: finanças organizadas, refeições planejadas, tarefas em dia e uma casa inteligente, elegante e feita para você." },
       { property: "og:title", content: "Sobre o Kotiva" },
-      { property: "og:description", content: "Nossa missão é transformar como você cuida dos seus alimentos." },
+      { property: "og:description", content: "A inteligência completa da sua casa: menos desperdício, mais praticidade, mais vida." },
     ],
   }),
   component: About,
@@ -18,7 +18,7 @@ function About() {
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
       <h1 className="font-display text-4xl font-extrabold md:text-5xl">Nossa missão</h1>
       <p className="mt-4 text-lg text-muted-foreground">
-        O Kotiva nasceu com um propósito simples: reduzir o desperdício de alimentos e tornar a cozinha do dia a dia mais inteligente, prática e prazerosa.
+        O Kotiva nasceu com um propósito simples: transformar a rotina da casa. Reduzir o desperdício de alimentos, organizar finanças, planejar refeições, controlar tarefas e criar uma experiência premium que respeita o seu tempo e a sua inteligência.
       </p>
       <div className="mt-12 grid gap-6 md:grid-cols-3">
         {[
