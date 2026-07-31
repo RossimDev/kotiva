@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Refrigerator } from "lucide-react";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,13 +71,11 @@ function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-warm px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#0F172A] px-4 py-12">
       <div className="w-full max-w-md">
-        <Link to="/" className="mb-6 flex items-center justify-center gap-2 font-display text-xl font-bold">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-hero text-primary-foreground shadow-glow">
-            <Refrigerator className="h-5 w-5" />
-          </span>
-          Koti<span className="text-primary">va</span>
+        <Link to="/" className="mb-6 flex items-center justify-center gap-2 font-display text-xl font-bold text-white">
+          <img src="/logo-kotiva.png" alt="Kotiva" className="h-10 w-auto drop-shadow-md" />
+          <span className="text-[#5B4DFF]">KOTIVA</span>
         </Link>
         <Card className="p-8 shadow-soft">
           <h1 className="font-display text-2xl font-bold">{mode === "signup" ? "Criar conta" : "Entrar"}</h1>
@@ -95,7 +93,7 @@ function AuthPage() {
             </Button>
           </form>
           <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground"><div className="h-px flex-1 bg-border" /> ou <div className="h-px flex-1 bg-border" /></div>
-          <Button type="button" variant="outline" className="w-full" onClick={async () => {
+          <Button type="button" variant="outline" className="w-full border-[#5B4DFF]/40 bg-[#1E293B] text-white hover:bg-[#5B4DFF]/10 hover:text-white" onClick={async () => {
             const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}/auth/callback` });
             if (result.error) { toast.error("Falha no login com Google"); return; }
             if (result.redirected) return;
