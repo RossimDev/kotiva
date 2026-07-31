@@ -73,9 +73,8 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0F172A] px-4 py-12">
       <div className="w-full max-w-md">
-        <Link to="/" className="mb-6 flex items-center justify-center gap-2 font-display text-xl font-bold text-white">
-          <img src="/logo-kotiva.png" alt="Kotiva" className="h-10 w-auto drop-shadow-md" />
-          <span className="text-[#5B4DFF]">KOTIVA</span>
+        <Link to="/" className="mb-6 flex items-center justify-center gap-2">
+          <img src="/logo-kotiva.png" alt="Kotiva" className="h-12 w-auto drop-shadow-md" />
         </Link>
         <Card className="p-8 shadow-soft">
           <h1 className="font-display text-2xl font-bold">{mode === "signup" ? "Criar conta" : "Entrar"}</h1>
