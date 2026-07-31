@@ -1,120 +1,91 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ChefHat, Bell, ScanLine, ShoppingCart, Leaf, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { ShoppingCart, ClipboardList, Wallet, BrainCircuit, Bell, User } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Kotiva — A inteligência completa da sua casa" },
-      { name: "description", content: "Finanças, refeições, tarefas e organização da casa em um só app inteligente, elegante e feito para você. Menos desperdício, mais praticidade, mais vida." },
+      { name: "description", content: "Finanças, refeições, tarefas e organização da casa em um só app inteligente, elegante e feito para você." },
       { property: "og:title", content: "Kotiva — A inteligência completa da sua casa" },
-      { property: "og:description", content: "Organize finanças, planeje refeições, controle tarefas e gerencie sua casa com um único app inteligente, elegante e feito para você." },
+      { property: "og:description", content: "Tudo organizado na sua casa. Controle financeiro, compras, tarefas e IA assistente." },
     ],
   }),
   component: Home,
 });
 
-const features = [
-  { icon: ScanLine, title: "Geladeira Inteligente", desc: "Cadastre alimentos, escaneie códigos de barras e acompanhe validades com alertas automáticos." },
-  { icon: Bell, title: "Receitas com IA", desc: "Sugestões personalizadas baseadas no que você já tem em casa, reduzindo desperdício." },
-  { icon: ChefHat, title: "Planejamento de Refeições", desc: "Organize cardápios semanais e listas de compras automáticas a partir do estoque." },
-  { icon: ShoppingCart, title: "Finanças Domésticas", desc: "Controle gastos de mercado, conta de luz, gás e orçamento mensal em um só lugar." },
-  { icon: Leaf, title: "Tarefas da Casa", desc: "Crie lembretes de limpeza, manutenção e organização para que nada fique para depois." },
-  { icon: Sparkles, title: "Experiência Premium", desc: "Design moderno, rápido e responsivo — uma marca que transmite confiança e sofisticação." },
-];
-
 function Home() {
   return (
-    <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-warm">
-        <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-accent/30 blur-3xl" />
-        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
-          <div className="flex flex-col justify-center">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> Powered by IA
-            </div>
-            <h1 className="mt-4 font-display text-5xl font-extrabold leading-tight md:text-7xl">
-              Sua casa, <span className="text-gradient">mais inteligente</span> que nunca
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-              Finanças organizadas, refeições planejadas, tarefas no controle e uma casa que funciona para você — tudo em um app elegante e feito sob medida.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="shadow-glow">
-                <Link to="/auth" search={{ mode: "signup" }}>
-                  Começar grátis <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link to="/pricing">Ver planos</Link>
-              </Button>
-            </div>
-            <div className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
-              <div><span className="font-bold text-foreground">10k+</span> usuários</div>
-              <div><span className="font-bold text-foreground">50k+</span> receitas geradas</div>
-              <div><span className="font-bold text-foreground">30%</span> menos desperdício</div>
-            </div>
-          </div>
-          <div className="relative flex items-center justify-center">
-            <div className="animate-float rounded-3xl bg-card p-6 shadow-soft ring-1 ring-border/60">
-              <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
-                <div className="grid h-10 w-10 place-items-center rounded-xl bg-hero text-primary-foreground"><ChefHat className="h-5 w-5" /></div>
-                <div>
-                  <div className="text-sm font-semibold">Sugestão do dia</div>
-                  <div className="text-xs text-muted-foreground">Baseado no que você tem</div>
-                </div>
-              </div>
-              <div className="space-y-3">
-                {["🍅 Tomate — vence em 2 dias", "💰 Conta de luz — vencimento 05/08", "🧹 Tarefa: limpar geladeira", "🥑 Abacate — vence hoje"].map((t) => (
-                  <div key={t} className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2 text-sm">
-                    <span>{t}</span>
-                  </div>
-                ))}
-                <div className="mt-3 rounded-xl bg-hero p-4 text-primary-foreground">
-                  <div className="text-xs opacity-80">Sugestão inteligente do Kotiva</div>
-                  <div className="font-display text-lg font-bold">Guacamole + salada fresca + controle de gastos</div>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC]">
+      {/* Header */}
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#0F172A]/80 px-6 py-4 backdrop-blur-xl">
+        <div className="flex items-center gap-3">
+          <img src="/logo-kotiva.png" alt="Kotiva" className="h-10 w-auto drop-shadow-md" />
+          <h1 className="font-display text-xl font-extrabold tracking-tight">Anotar</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="rounded-full p-2 hover:bg-white/10" aria-label="Notificações"><Bell className="h-5 w-5 text-[#F8FAFC]" /></button>
+          <div className="h-9 w-9 overflow-hidden rounded-full ring-2 ring-[#5B4DFF]/40">
+            <img src="https://i.pravatar.cc/150?img=12" alt="Guilherme" className="h-full w-full object-cover" />
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Features */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-3xl font-bold md:text-4xl">Tudo o que sua cozinha precisa</h2>
-          <p className="mt-3 text-muted-foreground">Recursos poderosos, experiência simples.</p>
-        </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <Card key={f.title} className="p-6 transition-all hover:-translate-y-1 hover:shadow-soft">
-              <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
-                <f.icon className="h-5 w-5" />
+      <main className="mx-auto max-w-md px-5 py-8">
+        {/* Card Saldo */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#5B4DFF] via-[#6D48F2] to-[#7C3AED] p-7 shadow-2xl shadow-[#5B4DFF]/30">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-sm font-medium text-white/80">Saldo do mês</h2>
+              <div className="mt-1 font-display text-4xl font-extrabold tracking-tight text-white">R$ 2.345,67</div>
+              <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-white/70">
+                <Wallet className="h-3.5 w-3.5" /> Controle financeiro
               </div>
-              <h3 className="font-display text-lg font-bold">{f.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
-            </Card>
+            </div>
+            {/* Circular progress */}
+            <div className="relative h-20 w-20 shrink-0">
+              <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="10" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#F59E0B" strokeWidth="10" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="60" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#22C55E" strokeWidth="10" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="100" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#5B4DFF" strokeWidth="10" strokeLinecap="round" strokeDasharray="264" strokeDashoffset="160" />
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        {/* Saudação */}
+        <div className="mt-6">
+          <h3 className="font-display text-2xl font-bold">Olá, Guilherme! 👋</h3>
+          <p className="mt-1 text-sm text-slate-300">Tudo organizado na sua casa.</p>
+        </div>
+
+        {/* 4 Botões */}
+        <section className="mt-8 grid grid-cols-4 gap-3">
+          {[
+            { icon: ShoppingCart, label: "Compras", color: "from-[#5B4DFF] to-[#7C3AED]" },
+            { icon: ClipboardList, label: "Tarefas", color: "from-[#7C3AED] to-[#5B4DFF]" },
+            { icon: Wallet, label: "Finanças", color: "from-[#F59E0B] to-[#F97316]" },
+            { icon: BrainCircuit, label: "IA Assistente", color: "from-[#22C55E] to-[#16A34A]" },
+          ].map((b) => (
+            <Link
+              key={b.label}
+              to="/app/dashboard"
+              className={`flex flex-col items-center gap-2 rounded-2xl bg-gradient-to-br ${b.color} p-4 shadow-lg shadow-black/20 transition-transform hover:-translate-y-1 hover:shadow-xl`}
+            >
+              <div className="grid h-12 w-12 place-items-center rounded-full bg-white/10 backdrop-blur">
+                <b.icon className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xs font-semibold text-white">{b.label}</span>
+            </Link>
           ))}
-        </div>
-      </section>
+        </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
-        <div className="relative overflow-hidden rounded-3xl bg-hero p-10 text-primary-foreground shadow-glow md:p-16">
-          <div className="relative z-10 max-w-2xl">
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Comece a economizar hoje</h2>
-            <p className="mt-3 text-primary-foreground/90">Crie sua conta grátis e transforme como você cuida da sua alimentação.</p>
-            <Button asChild size="lg" variant="secondary" className="mt-6">
-              <Link to="/auth" search={{ mode: "signup" }}>Criar conta grátis</Link>
-            </Button>
-          </div>
-          <div className="pointer-events-none absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
+        {/* Pequeno destaque de marca no final */}
+        <div className="mt-10 text-center">
+          <img src="/logo-kotiva.png" alt="Kotiva" className="mx-auto h-8 w-auto opacity-80" />
+          <p className="mt-2 text-xs text-slate-400">Kotiva — A inteligência completa da sua casa</p>
         </div>
-      </section>
-    </>
+      </main>
+    </div>
   );
 }
