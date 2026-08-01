@@ -91,8 +91,8 @@ function Home() {
           <p className="mt-3 text-muted-foreground">Recursos poderosos, experiência simples.</p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <Card key={f.title} className="p-6 transition-all hover:-translate-y-1 hover:shadow-soft">
+          {features.map((f, i) => (
+            <Card key={f.title} className={`animate-fade-in stagger-${Math.min(i + 1, 6)} p-6 hover-lift`}>
               <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
                 <f.icon className="h-5 w-5" />
               </div>
@@ -101,6 +101,7 @@ function Home() {
             </Card>
           ))}
         </div>
+
       </section>
 
       {/* CTA */}
