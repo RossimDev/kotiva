@@ -33,33 +33,33 @@ function Home() {
         <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
         <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
           <div className="flex flex-col justify-center">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            <div className="inline-flex w-fit animate-fade-in items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" /> Powered by IA
             </div>
-            <h1 className="mt-4 font-display text-5xl font-extrabold leading-tight md:text-6xl">
+            <h1 className="mt-4 animate-fade-in stagger-1 font-display text-5xl font-extrabold leading-tight md:text-6xl">
               Organize. Planeje. <span className="text-gradient">Viva melhor.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-lg text-muted-foreground">
+            <p className="mt-5 max-w-lg animate-fade-in stagger-2 text-lg text-muted-foreground">
               A plataforma inteligente que cuida da casa inteira: geladeira, compras, contas, cozinha, limpeza e pets — tudo com IA.
             </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="shadow-glow">
+            <div className="mt-8 flex animate-fade-in stagger-3 flex-wrap gap-3">
+              <Button asChild size="lg" className="shadow-glow hover-scale">
                 <Link to="/auth" search={{ mode: "signup" }}>
                   Começar grátis <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="hover-scale">
                 <Link to="/pricing">Ver planos</Link>
               </Button>
             </div>
-            <div className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
+            <div className="mt-8 flex animate-fade-in stagger-4 items-center gap-6 text-sm text-muted-foreground">
               <div><span className="font-bold text-foreground">10k+</span> usuários</div>
               <div><span className="font-bold text-foreground">50k+</span> receitas geradas</div>
               <div><span className="font-bold text-foreground">30%</span> menos desperdício</div>
             </div>
           </div>
-          <div className="relative flex items-center justify-center">
+          <div className="relative flex animate-scale-in stagger-2 items-center justify-center">
+
             <div className="animate-float rounded-3xl bg-card p-6 shadow-soft ring-1 ring-border/60">
               <div className="mb-4 flex items-center gap-2 border-b border-border pb-3">
                 <div className="grid h-10 w-10 place-items-center rounded-xl bg-hero text-primary-foreground"><ChefHat className="h-5 w-5" /></div>
@@ -91,8 +91,8 @@ function Home() {
           <p className="mt-3 text-muted-foreground">Recursos poderosos, experiência simples.</p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <Card key={f.title} className="p-6 transition-all hover:-translate-y-1 hover:shadow-soft">
+          {features.map((f, i) => (
+            <Card key={f.title} className={`animate-fade-in stagger-${Math.min(i + 1, 6)} p-6 hover-lift`}>
               <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
                 <f.icon className="h-5 w-5" />
               </div>
@@ -101,6 +101,7 @@ function Home() {
             </Card>
           ))}
         </div>
+
       </section>
 
       {/* CTA */}
