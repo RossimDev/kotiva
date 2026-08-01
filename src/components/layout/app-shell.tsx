@@ -1,10 +1,12 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { Refrigerator, LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X, Bell, Timer, Home, Flame, Sparkles, PawPrint, Wallet } from "lucide-react";
+import { LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X, Bell, Timer, Home, Flame, Sparkles, PawPrint, Wallet } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import kotivaMark from "@/assets/kotiva-mark.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+
 
 const nav = [
   { to: "/app/dashboard", icon: LayoutDashboard, label: "Painel" },
@@ -49,12 +51,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         "fixed inset-y-0 left-0 z-40 w-64 border-r border-border/60 bg-card p-4 transition-transform md:sticky md:top-0 md:h-screen md:translate-x-0",
         open ? "translate-x-0" : "-translate-x-full"
       )}>
-        <Link to="/app/dashboard" className="mb-8 flex items-center gap-2 font-display text-lg font-bold">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-hero text-primary-foreground shadow-glow">
-            <Refrigerator className="h-5 w-5" />
-          </span>
-          Koti<span className="text-primary">va</span>
+        <Link to="/app/dashboard" className="mb-8 flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+          <img src={kotivaMark.url} alt="Kotiva" className="h-9 w-9" />
+          KOTI<span className="text-primary">VA</span>
         </Link>
+
         <nav className="space-y-1">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
