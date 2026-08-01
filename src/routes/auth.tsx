@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Refrigerator } from "lucide-react";
+import kotivaMark from "@/assets/kotiva-mark.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,13 +73,12 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-warm px-4 py-12">
       <div className="w-full max-w-md">
-        <Link to="/" className="mb-6 flex items-center justify-center gap-2 font-display text-xl font-bold">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-hero text-primary-foreground shadow-glow">
-            <Refrigerator className="h-5 w-5" />
-          </span>
-          Koti<span className="text-primary">va</span>
+        <Link to="/" className="mb-6 flex animate-fade-in items-center justify-center gap-2 font-display text-xl font-bold tracking-tight">
+          <img src={kotivaMark.url} alt="Kotiva" className="h-10 w-10" />
+          KOTI<span className="text-primary">VA</span>
         </Link>
-        <Card className="p-8 shadow-soft">
+        <Card className="animate-scale-in stagger-1 p-8 shadow-soft">
+
           <h1 className="font-display text-2xl font-bold">{mode === "signup" ? "Criar conta" : "Entrar"}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {mode === "signup" ? "Comece gratuitamente em segundos." : "Acesse seu painel."}
