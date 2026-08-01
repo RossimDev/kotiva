@@ -30,18 +30,19 @@ function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-warm">
         <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/30 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-accent/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
         <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
           <div className="flex flex-col justify-center">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" /> Powered by IA
             </div>
             <h1 className="mt-4 font-display text-5xl font-extrabold leading-tight md:text-6xl">
-              Sua geladeira <span className="text-gradient">mais inteligente</span> que nunca
+              Organize. Planeje. <span className="text-gradient">Viva melhor.</span>
             </h1>
             <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-              Cadastre alimentos, acompanhe validades e ganhe receitas personalizadas com IA. Chega de desperdício.
+              A plataforma inteligente que cuida da casa inteira: geladeira, compras, contas, cozinha, limpeza e pets — tudo com IA.
             </p>
+
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="shadow-glow">
                 <Link to="/auth" search={{ mode: "signup" }}>

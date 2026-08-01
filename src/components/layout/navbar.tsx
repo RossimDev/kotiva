@@ -1,10 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, Moon, Refrigerator, Sun, X } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import { useState } from "react";
+import kotivaMark from "@/assets/kotiva-mark.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
+
 
 const publicLinks = [
   { to: "/", label: "Início" },
@@ -24,12 +26,11 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-hero text-primary-foreground shadow-glow">
-            <Refrigerator className="h-5 w-5" />
-          </span>
-          Koti<span className="text-primary">va</span>
+        <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+          <img src={kotivaMark.url} alt="Kotiva" className="h-9 w-9" />
+          KOTI<span className="text-primary">VA</span>
         </Link>
+
 
         <nav className="hidden items-center gap-1 md:flex">
           {publicLinks.map((l) => (

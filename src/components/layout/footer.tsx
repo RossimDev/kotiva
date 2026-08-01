@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Refrigerator } from "lucide-react";
+import kotivaMark from "@/assets/kotiva-mark.png.asset.json";
 
 export function Footer() {
   const { location } = useRouterState();
@@ -9,16 +9,15 @@ export function Footer() {
     <footer className="border-t border-border/60 bg-muted/30">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="space-y-3">
-          <div className="flex items-center gap-2 font-display text-lg font-bold">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-hero text-primary-foreground">
-              <Refrigerator className="h-5 w-5" />
-            </span>
-            Koti<span className="text-primary">va</span>
+          <div className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+            <img src={kotivaMark.url} alt="Kotiva" className="h-9 w-9" />
+            KOTI<span className="text-primary">VA</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Gerencie sua geladeira com inteligência artificial. Menos desperdício, mais receitas.
+            Organize. Planeje. Viva melhor. A plataforma inteligente para o gerenciamento completo da sua casa.
           </p>
         </div>
+
         <div>
           <h4 className="mb-3 text-sm font-semibold">Produto</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
