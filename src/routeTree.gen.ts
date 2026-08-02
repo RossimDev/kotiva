@@ -18,6 +18,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppStoveRouteImport } from './routes/app.stove'
+import { Route as AppSoonRouteImport } from './routes/app.soon'
 import { Route as AppShoppingRouteImport } from './routes/app.shopping'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppRecipesRouteImport } from './routes/app.recipes'
@@ -78,6 +79,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppStoveRoute = AppStoveRouteImport.update({
   id: '/stove',
   path: '/stove',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSoonRoute = AppSoonRouteImport.update({
+  id: '/soon',
+  path: '/soon',
   getParentRoute: () => AppRoute,
 } as any)
 const AppShoppingRoute = AppShoppingRouteImport.update({
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/soon': typeof AppSoonRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
   '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/soon': typeof AppSoonRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
   '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/soon': typeof AppSoonRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
   '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
@@ -270,6 +279,7 @@ export interface FileRouteTypes {
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/soon'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
     | '/api/public/hooks/mercadopago'
@@ -297,6 +307,7 @@ export interface FileRouteTypes {
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/soon'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
     | '/api/public/hooks/mercadopago'
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/soon'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
     | '/api/public/hooks/mercadopago'
@@ -405,6 +417,13 @@ declare module '@tanstack/react-router' {
       path: '/stove'
       fullPath: '/app/stove'
       preLoaderRoute: typeof AppStoveRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/soon': {
+      id: '/app/soon'
+      path: '/soon'
+      fullPath: '/app/soon'
+      preLoaderRoute: typeof AppSoonRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/shopping': {
@@ -537,6 +556,7 @@ interface AppRouteChildren {
   AppRecipesRoute: typeof AppRecipesRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppShoppingRoute: typeof AppShoppingRoute
+  AppSoonRoute: typeof AppSoonRoute
   AppStoveRoute: typeof AppStoveRoute
 }
 
@@ -555,6 +575,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppRecipesRoute: AppRecipesRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppShoppingRoute: AppShoppingRoute,
+  AppSoonRoute: AppSoonRoute,
   AppStoveRoute: AppStoveRoute,
 }
 
