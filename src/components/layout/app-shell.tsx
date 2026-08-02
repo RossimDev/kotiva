@@ -1,5 +1,5 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X, Bell, Timer, Home, Flame, Sparkles, PawPrint, Wallet } from "lucide-react";
+import { LayoutDashboard, Package, ChefHat, ShoppingCart, User, Settings, Shield, LogOut, Menu, X, Bell, Timer, Home, Flame, Sparkles, PawPrint, Wallet, CalendarClock, Crown } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import kotivaMark from "@/assets/kotiva-mark.png.asset.json";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils";
 
 const nav = [
   { to: "/app/dashboard", icon: LayoutDashboard, label: "Painel" },
-  { to: "/app/items", icon: Package, label: "Geladeira" },
+  { to: "/app/items", icon: Package, label: "Minha Geladeira" },
+  { to: "/app/soon", icon: CalendarClock, label: "Vencendo em Breve" },
   { to: "/app/recipes", icon: ChefHat, label: "Cozinheiro IA" },
   { to: "/app/shopping", icon: ShoppingCart, label: "Compras" },
   { to: "/app/stove", icon: Timer, label: "Fogão" },
@@ -20,6 +21,7 @@ const nav = [
   { to: "/app/cleaning", icon: Sparkles, label: "Limpeza IA" },
   { to: "/app/pets", icon: PawPrint, label: "Pet IA" },
   { to: "/app/notifications", icon: Bell, label: "Notificações" },
+  { to: "/app/plan", icon: Crown, label: "Meu plano" },
   { to: "/app/profile", icon: User, label: "Perfil" },
   { to: "/app/settings", icon: Settings, label: "Configurações" },
 ] as const;
@@ -53,7 +55,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}>
         <Link to="/app/dashboard" className="mb-8 flex items-center gap-2 font-display text-lg font-bold tracking-tight">
           <img src={kotivaMark.url} alt="Kotiva" className="h-9 w-9" />
-          KOTI<span className="text-primary">VA</span>
+          <span className="text-primary">KOTIVA</span>
         </Link>
 
         <nav className="space-y-1">
@@ -81,7 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Mobile top */}
       <div className="flex flex-1 flex-col">
         <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur md:hidden">
-          <Link to="/app/dashboard" className="font-display font-bold">Koti<span className="text-primary">va</span></Link>
+          <Link to="/app/dashboard" className="font-display font-bold"><span className="text-primary">KOTIVA</span></Link>
           <Button variant="ghost" size="icon" onClick={() => setOpen((o) => !o)}>
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>

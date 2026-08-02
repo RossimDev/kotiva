@@ -8,7 +8,7 @@ export type MpPlan = {
 
 export const MP_PLANS: Record<MpPlan["id"], MpPlan> = {
   pro: { id: "pro", title: "Kotiva Pro (mensal)", price: 17.0 },
-  family: { id: "family", title: "Kotiva Família (mensal)", price: 35.0 },
+  family: { id: "family", title: "Kotiva Família (mensal)", price: 20.0 },
 };
 
 /** Cria uma preferência de pagamento no Mercado Pago e devolve o link de checkout. */

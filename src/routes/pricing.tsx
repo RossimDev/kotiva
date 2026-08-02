@@ -23,9 +23,9 @@ export const Route = createFileRoute("/pricing")({
 });
 
 const plans = [
-  { id: null, name: "Grátis", price: "R$ 0", period: "/mês", desc: "Perfeito para começar", features: ["Até 20 itens", "Alertas de validade", "1 lista de compras", "Receitas básicas"], cta: "Começar", highlight: false },
+  { id: null, name: "Grátis", price: "R$ 0", period: "/mês", desc: "Perfeito para começar", features: ["Minha Geladeira completa", "Vencendo em Breve", "Listas de Compras", "Alertas de validade"], cta: "Começar", highlight: false },
   { id: "pro" as const, name: "Pro", price: "R$ 17", period: "/mês", desc: "Para quem cuida da casa todo dia", features: ["Itens ilimitados", "Cozinheiro IA ilimitado", "Cardápio de 7 dias", "Scanner de código de barras", "Casa, Fogão e Botijão inteligentes"], cta: "Assinar Pro", highlight: true },
-  { id: "family" as const, name: "Família", price: "R$ 35", period: "/mês", desc: "Até 5 usuários", features: ["Tudo do Pro", "Até 5 membros", "Geladeira compartilhada", "Planejamento semanal", "Suporte 24/7"], cta: "Assinar Família", highlight: false },
+  { id: "family" as const, name: "Família", price: "R$ 20", period: "/mês", desc: "Tudo do Pro para a casa toda", features: ["Tudo do Pro", "Até 5 membros", "Geladeira compartilhada", "Planejamento semanal", "Suporte 24/7"], cta: "Assinar Família", highlight: false },
 ];
 
 function Pricing() {

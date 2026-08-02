@@ -75,7 +75,7 @@ function AuthPage() {
       <div className="w-full max-w-md">
         <Link to="/" className="mb-6 flex animate-fade-in items-center justify-center gap-2 font-display text-xl font-bold tracking-tight">
           <img src={kotivaMark.url} alt="Kotiva" className="h-10 w-10" />
-          KOTI<span className="text-primary">VA</span>
+          <span className="text-primary">KOTIVA</span>
         </Link>
         <Card className="animate-scale-in stagger-1 p-8 shadow-soft">
 
