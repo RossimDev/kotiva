@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Flame, Plus, RefreshCw, Trash2, CircleOff, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { ChartColorSettings, useChartColors } from "@/components/chart-colors";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ type Tank = {
 
 function Gas() {
   const { user } = useAuth();
+  const gasColors = useChartColors("gas");
   const [tanks, setTanks] = useState<Tank[]>([]);
   const [form, setForm] = useState({ name: "Botijão principal", capacity_kg: "13", avg_days: "45", price: "", installed_at: isoDate(new Date()) });
 
@@ -208,7 +210,10 @@ function Gas() {
 
       {history.length > 0 && (
         <Card className="p-5">
-          <h2 className="flex items-center gap-2 font-display text-lg font-bold"><TrendingUp className="h-4 w-4" /> Duração real por botijão</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="flex items-center gap-2 font-display text-lg font-bold"><TrendingUp className="h-4 w-4" /> Duração real por botijão</h2>
+            <ChartColorSettings keys={["Duração"]} controller={gasColors} />
+          </div>
           <p className="text-xs text-muted-foreground">Média real de {realAvg} dias • custo médio {money(history.reduce((s, h) => s + h.preco, 0) / history.length)}</p>
           <div className="mt-4 h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -217,7 +222,7 @@ function Gas() {
                 <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
                 <YAxis tickLine={false} axisLine={false} fontSize={12} width={30} />
                 <Tooltip formatter={(v: number) => [`${v} dias`, "Duração"]} contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))" }} />
-                <Bar dataKey="dias" radius={[8, 8, 0, 0]} fill="hsl(var(--primary))" />
+                <Bar dataKey="dias" radius={[8, 8, 0, 0]} fill={gasColors.colorFor("Duração", 0)} />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { ChartColorSettings, useChartColors } from "@/components/chart-colors";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { BILL_CATEGORIES, money, isoDate } from "@/lib/kotiva";
@@ -30,6 +32,7 @@ type Bill = {
 
 function House() {
   const { user } = useAuth();
+  const houseColors = useChartColors("house");
   const [bills, setBills] = useState<Bill[]>([]);
   const [form, setForm] = useState({ name: "", category: "Moradia", amount: "", due_day: "5", recurring: true });
 
@@ -167,16 +170,32 @@ function House() {
         </Card>
 
         <Card className="p-5">
-          <h2 className="font-display text-lg font-bold">Por categoria</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold">Por categoria</h2>
+            <ChartColorSettings keys={byCategory.map(([c]) => c)} controller={houseColors} />
+          </div>
+          {byCategory.length > 0 && (
+            <div className="mt-3 h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={byCategory.map(([name, value]) => ({ name, value }))} dataKey="value" nameKey="name" innerRadius={42} outerRadius={72} paddingAngle={3}>
+                    {byCategory.map(([name], i) => <Cell key={name} fill={houseColors.colorFor(name, i)} />)}
+                  </Pie>
+                  <Tooltip formatter={(v: number) => money(v)} contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))" }} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
           {byCategory.length === 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">Sem dados.</p>
           ) : (
             <ul className="mt-4 space-y-3">
-              {byCategory.map(([cat, val]) => (
+              {byCategory.map(([cat, val], ci) => (
                 <li key={cat}>
                   <div className="flex justify-between text-sm"><span>{cat}</span><span className="font-medium">{money(val)}</span></div>
                   <div className="mt-1 h-2 rounded-full bg-muted">
-                    <div className="h-2 rounded-full bg-primary" style={{ width: `${totals.total ? (val / totals.total) * 100 : 0}%` }} />
+                    <div className="h-2 rounded-full" style={{ width: `${totals.total ? (val / totals.total) * 100 : 0}%`, background: houseColors.colorFor(cat, ci) }} />
                   </div>
                 </li>
               ))}
