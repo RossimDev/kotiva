@@ -22,6 +22,7 @@ import { Route as AppShoppingRouteImport } from './routes/app.shopping'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppRecipesRouteImport } from './routes/app.recipes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppPlanRouteImport } from './routes/app.plan'
 import { Route as AppPetsRouteImport } from './routes/app.pets'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppItemsRouteImport } from './routes/app.items'
@@ -97,6 +98,11 @@ const AppRecipesRoute = AppRecipesRouteImport.update({
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlanRoute = AppPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPetsRoute = AppPetsRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/pets': typeof AppPetsRoute
+  '/app/plan': typeof AppPlanRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/pets': typeof AppPetsRoute
+  '/app/plan': typeof AppPlanRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/pets': typeof AppPetsRoute
+  '/app/plan': typeof AppPlanRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/app/items'
     | '/app/notifications'
     | '/app/pets'
+    | '/app/plan'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/app/items'
     | '/app/notifications'
     | '/app/pets'
+    | '/app/plan'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/app/items'
     | '/app/notifications'
     | '/app/pets'
+    | '/app/plan'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
@@ -423,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/plan': {
+      id: '/app/plan'
+      path: '/plan'
+      fullPath: '/app/plan'
+      preLoaderRoute: typeof AppPlanRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/pets': {
       id: '/app/pets'
       path: '/pets'
@@ -513,6 +532,7 @@ interface AppRouteChildren {
   AppItemsRoute: typeof AppItemsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppPetsRoute: typeof AppPetsRoute
+  AppPlanRoute: typeof AppPlanRoute
   AppProfileRoute: typeof AppProfileRoute
   AppRecipesRoute: typeof AppRecipesRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -530,6 +550,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppItemsRoute: AppItemsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppPetsRoute: AppPetsRoute,
+  AppPlanRoute: AppPlanRoute,
   AppProfileRoute: AppProfileRoute,
   AppRecipesRoute: AppRecipesRoute,
   AppSettingsRoute: AppSettingsRoute,
