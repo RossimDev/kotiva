@@ -18,10 +18,12 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppStoveRouteImport } from './routes/app.stove'
+import { Route as AppSoonRouteImport } from './routes/app.soon'
 import { Route as AppShoppingRouteImport } from './routes/app.shopping'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppRecipesRouteImport } from './routes/app.recipes'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppPlanRouteImport } from './routes/app.plan'
 import { Route as AppPetsRouteImport } from './routes/app.pets'
 import { Route as AppNotificationsRouteImport } from './routes/app.notifications'
 import { Route as AppItemsRouteImport } from './routes/app.items'
@@ -79,6 +81,11 @@ const AppStoveRoute = AppStoveRouteImport.update({
   path: '/stove',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSoonRoute = AppSoonRouteImport.update({
+  id: '/soon',
+  path: '/soon',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppShoppingRoute = AppShoppingRouteImport.update({
   id: '/shopping',
   path: '/shopping',
@@ -97,6 +104,11 @@ const AppRecipesRoute = AppRecipesRouteImport.update({
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlanRoute = AppPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPetsRoute = AppPetsRouteImport.update({
@@ -175,10 +187,12 @@ export interface FileRoutesByFullPath {
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/pets': typeof AppPetsRoute
+  '/app/plan': typeof AppPlanRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/soon': typeof AppSoonRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
   '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
@@ -201,10 +215,12 @@ export interface FileRoutesByTo {
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/pets': typeof AppPetsRoute
+  '/app/plan': typeof AppPlanRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/soon': typeof AppSoonRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
   '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
@@ -228,10 +244,12 @@ export interface FileRoutesById {
   '/app/items': typeof AppItemsRoute
   '/app/notifications': typeof AppNotificationsRoute
   '/app/pets': typeof AppPetsRoute
+  '/app/plan': typeof AppPlanRoute
   '/app/profile': typeof AppProfileRoute
   '/app/recipes': typeof AppRecipesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/shopping': typeof AppShoppingRoute
+  '/app/soon': typeof AppSoonRoute
   '/app/stove': typeof AppStoveRoute
   '/api/public/hooks/expiry-alerts': typeof ApiPublicHooksExpiryAlertsRoute
   '/api/public/hooks/mercadopago': typeof ApiPublicHooksMercadopagoRoute
@@ -256,10 +274,12 @@ export interface FileRouteTypes {
     | '/app/items'
     | '/app/notifications'
     | '/app/pets'
+    | '/app/plan'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/soon'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
     | '/api/public/hooks/mercadopago'
@@ -282,10 +302,12 @@ export interface FileRouteTypes {
     | '/app/items'
     | '/app/notifications'
     | '/app/pets'
+    | '/app/plan'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/soon'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
     | '/api/public/hooks/mercadopago'
@@ -308,10 +330,12 @@ export interface FileRouteTypes {
     | '/app/items'
     | '/app/notifications'
     | '/app/pets'
+    | '/app/plan'
     | '/app/profile'
     | '/app/recipes'
     | '/app/settings'
     | '/app/shopping'
+    | '/app/soon'
     | '/app/stove'
     | '/api/public/hooks/expiry-alerts'
     | '/api/public/hooks/mercadopago'
@@ -395,6 +419,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStoveRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/soon': {
+      id: '/app/soon'
+      path: '/soon'
+      fullPath: '/app/soon'
+      preLoaderRoute: typeof AppSoonRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/shopping': {
       id: '/app/shopping'
       path: '/shopping'
@@ -421,6 +452,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/app/profile'
       preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/plan': {
+      id: '/app/plan'
+      path: '/plan'
+      fullPath: '/app/plan'
+      preLoaderRoute: typeof AppPlanRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/pets': {
@@ -513,10 +551,12 @@ interface AppRouteChildren {
   AppItemsRoute: typeof AppItemsRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppPetsRoute: typeof AppPetsRoute
+  AppPlanRoute: typeof AppPlanRoute
   AppProfileRoute: typeof AppProfileRoute
   AppRecipesRoute: typeof AppRecipesRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppShoppingRoute: typeof AppShoppingRoute
+  AppSoonRoute: typeof AppSoonRoute
   AppStoveRoute: typeof AppStoveRoute
 }
 
@@ -530,10 +570,12 @@ const AppRouteChildren: AppRouteChildren = {
   AppItemsRoute: AppItemsRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppPetsRoute: AppPetsRoute,
+  AppPlanRoute: AppPlanRoute,
   AppProfileRoute: AppProfileRoute,
   AppRecipesRoute: AppRecipesRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppShoppingRoute: AppShoppingRoute,
+  AppSoonRoute: AppSoonRoute,
   AppStoveRoute: AppStoveRoute,
 }
 
