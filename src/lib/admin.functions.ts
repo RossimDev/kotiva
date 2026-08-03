@@ -1,8 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
-async function assertAdmin(context: { supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown }> }; userId: string }) {
+type Ctx = { supabase: SupabaseClient<Database>; userId: string };
+
+async function assertAdmin(context: Ctx) {
   const { data } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
   if (data !== true) throw new Error("Acesso restrito a administradores");
 }
@@ -33,23 +37,25 @@ export const getAdminStats = createServerFn({ method: "POST" })
     const now = Date.now();
     const week = 7 * 86400000;
 
-    const count = async (table: string, filter?: (q: never) => unknown) => {
-      let q = supabaseAdmin.from(table).select("id", { count: "exact", head: true });
-      if (filter) q = filter(q as never) as typeof q;
-      const { count: c } = await q;
-      return c ?? 0;
-    };
-
-    const [fridgeItems, shoppingItems, recipes, pets, barcodes, messages, admins, activeSubscriptions] = await Promise.all([
-      count("fridge_items"),
-      count("shopping_items"),
-      count("saved_recipes"),
-      count("pets"),
-      count("product_barcodes"),
-      count("contact_messages"),
-      count("user_roles", (q) => (q as unknown as { eq: (a: string, b: string) => unknown }).eq("role", "admin")),
-      count("subscriptions", (q) => (q as unknown as { eq: (a: string, b: string) => unknown }).eq("status", "active")),
+    const head = { count: "exact" as const, head: true };
+    const [fridge, shopping, recipesQ, petsQ, barcodesQ, messagesQ, adminsQ, subsQ] = await Promise.all([
+      supabaseAdmin.from("fridge_items").select("id", head),
+      supabaseAdmin.from("shopping_items").select("id", head),
+      supabaseAdmin.from("saved_recipes").select("id", head),
+      supabaseAdmin.from("pets").select("id", head),
+      supabaseAdmin.from("product_barcodes").select("id", head),
+      supabaseAdmin.from("contact_messages").select("id", head),
+      supabaseAdmin.from("user_roles").select("id", head).eq("role", "admin"),
+      supabaseAdmin.from("subscriptions").select("id", head).eq("status", "active"),
     ]);
+    const fridgeItems = fridge.count ?? 0;
+    const shoppingItems = shopping.count ?? 0;
+    const recipes = recipesQ.count ?? 0;
+    const pets = petsQ.count ?? 0;
+    const barcodes = barcodesQ.count ?? 0;
+    const messages = messagesQ.count ?? 0;
+    const admins = adminsQ.count ?? 0;
+    const activeSubscriptions = subsQ.count ?? 0;
 
     const signups = new Map<string, number>();
     for (let i = 13; i >= 0; i--) {
