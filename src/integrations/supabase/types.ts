@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_invites: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          invited_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          invited_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           color: string | null
@@ -446,6 +467,48 @@ export type Database = {
         }
         Relationships: []
       }
+      product_barcodes: {
+        Row: {
+          brand: string | null
+          category: string
+          code: string
+          created_at: string
+          created_by: string | null
+          default_unit: string
+          id: string
+          name: string
+          section: string
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          brand?: string | null
+          category?: string
+          code: string
+          created_at?: string
+          created_by?: string | null
+          default_unit?: string
+          id?: string
+          name: string
+          section?: string
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          default_unit?: string
+          id?: string
+          name?: string
+          section?: string
+          updated_at?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
       product_catalog: {
         Row: {
           barcode: string
@@ -503,6 +566,45 @@ export type Database = {
           display_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      purchase_history: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          name: string
+          normalized_name: string
+          purchased_at: string
+          quantity: number
+          unit: string | null
+          unit_price: number
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          normalized_name: string
+          purchased_at?: string
+          quantity?: number
+          unit?: string | null
+          unit_price?: number
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          normalized_name?: string
+          purchased_at?: string
+          quantity?: number
+          unit?: string | null
+          unit_price?: number
+          user_id?: string
         }
         Relationships: []
       }
@@ -613,6 +715,36 @@ export type Database = {
           color?: string | null
           created_at?: string
           id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shopping_presets: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          items: Json
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          items?: Json
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          items?: Json
           name?: string
           updated_at?: string
           user_id?: string
