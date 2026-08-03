@@ -88,7 +88,7 @@ function parseOne(raw: string): ParsedItem | null {
   // remove marcações de checkbox e emojis simples
   text = text
     .replace(/^\[[ xX]?\]\s*/, "")
-    .replace(/[\u2600-\u27bf\ud83c-\udbff\udc00-\udfff]/g, "")
+    .replace(/[\u2600-\u27bf]|\p{Extended_Pictographic}/gu, "")
     .trim();
   if (!text) return null;
 
