@@ -374,7 +374,10 @@ function Items() {
             parsed.map((p) => ({ user_id: user.id, name: p.name, quantity: p.quantity, unit: p.unit })),
           );
           setPasteSaving(false);
-          if (error) return toast.error(error.message);
+          if (error) {
+            toast.error(error.message);
+            return;
+          }
           toast.success(`${parsed.length} produto(s) adicionados`);
           setPasteOpen(false);
           load();
