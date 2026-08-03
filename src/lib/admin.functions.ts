@@ -7,7 +7,10 @@ import type { Database } from "@/integrations/supabase/types";
 type Ctx = { supabase: SupabaseClient<Database>; userId: string };
 
 async function assertAdmin(context: Ctx) {
-  const { data } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+  const { data } = await context.supabase.rpc("has_role", {
+    _user_id: context.userId,
+    _role: "admin",
+  });
   if (data !== true) throw new Error("Acesso restrito a administradores");
 }
 
@@ -38,16 +41,17 @@ export const getAdminStats = createServerFn({ method: "POST" })
     const week = 7 * 86400000;
 
     const head = { count: "exact" as const, head: true };
-    const [fridge, shopping, recipesQ, petsQ, barcodesQ, messagesQ, adminsQ, subsQ] = await Promise.all([
-      supabaseAdmin.from("fridge_items").select("id", head),
-      supabaseAdmin.from("shopping_items").select("id", head),
-      supabaseAdmin.from("saved_recipes").select("id", head),
-      supabaseAdmin.from("pets").select("id", head),
-      supabaseAdmin.from("product_barcodes").select("id", head),
-      supabaseAdmin.from("contact_messages").select("id", head),
-      supabaseAdmin.from("user_roles").select("id", head).eq("role", "admin"),
-      supabaseAdmin.from("subscriptions").select("id", head).eq("status", "active"),
-    ]);
+    const [fridge, shopping, recipesQ, petsQ, barcodesQ, messagesQ, adminsQ, subsQ] =
+      await Promise.all([
+        supabaseAdmin.from("fridge_items").select("id", head),
+        supabaseAdmin.from("shopping_items").select("id", head),
+        supabaseAdmin.from("saved_recipes").select("id", head),
+        supabaseAdmin.from("pets").select("id", head),
+        supabaseAdmin.from("product_barcodes").select("id", head),
+        supabaseAdmin.from("contact_messages").select("id", head),
+        supabaseAdmin.from("user_roles").select("id", head).eq("role", "admin"),
+        supabaseAdmin.from("subscriptions").select("id", head).eq("status", "active"),
+      ]);
     const fridgeItems = fridge.count ?? 0;
     const shoppingItems = shopping.count ?? 0;
     const recipes = recipesQ.count ?? 0;
@@ -69,7 +73,8 @@ export const getAdminStats = createServerFn({ method: "POST" })
 
     return {
       users: users.length,
-      newUsers7d: users.filter((u) => u.created_at && now - new Date(u.created_at).getTime() < week).length,
+      newUsers7d: users.filter((u) => u.created_at && now - new Date(u.created_at).getTime() < week)
+        .length,
       admins,
       activeSubscriptions,
       fridgeItems,
@@ -80,9 +85,15 @@ export const getAdminStats = createServerFn({ method: "POST" })
       messages,
       recent: users
         .slice()
-        .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime())
+        .sort(
+          (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime(),
+        )
         .slice(0, 12)
-        .map((u) => ({ email: u.email ?? "—", createdAt: u.created_at ?? "", lastSignInAt: u.last_sign_in_at ?? null })),
+        .map((u) => ({
+          email: u.email ?? "—",
+          createdAt: u.created_at ?? "",
+          lastSignInAt: u.last_sign_in_at ?? null,
+        })),
       signupsByDay: [...signups.entries()].map(([day, c]) => ({ day: day.slice(5), count: c })),
     };
   });
@@ -99,7 +110,10 @@ export const listAdmins = createServerFn({ method: "POST" })
     ]);
     const byId = new Map((userList?.users ?? []).map((u) => [u.id, u.email ?? ""]));
     return {
-      admins: (roles ?? []).map((r) => ({ userId: r.user_id, email: byId.get(r.user_id) ?? "(conta removida)" })),
+      admins: (roles ?? []).map((r) => ({
+        userId: r.user_id,
+        email: byId.get(r.user_id) ?? "(conta removida)",
+      })),
       invites: (invites ?? []).map((i) => ({ email: i.email, createdAt: i.created_at })),
     };
   });
@@ -114,16 +128,26 @@ export const grantAdmin = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const email = data.email.toLowerCase();
 
-    await supabaseAdmin.from("admin_invites").upsert({ email, invited_by: context.userId }, { onConflict: "email" });
+    await supabaseAdmin
+      .from("admin_invites")
+      .upsert({ email, invited_by: context.userId }, { onConflict: "email" });
 
     const { data: userList } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
     const target = (userList?.users ?? []).find((u) => (u.email ?? "").toLowerCase() === email);
-    if (!target) return { ok: true, pending: true, message: "E-mail autorizado. O acesso admin será aplicado assim que a pessoa criar a conta." };
+    if (!target)
+      return {
+        ok: true,
+        pending: true,
+        message:
+          "E-mail autorizado. O acesso admin será aplicado assim que a pessoa criar a conta.",
+      };
 
-    const { error } = await supabaseAdmin.from("user_roles").upsert(
-      { user_id: target.id, role: "admin" },
-      { onConflict: "user_id,role", ignoreDuplicates: true },
-    );
+    const { error } = await supabaseAdmin
+      .from("user_roles")
+      .upsert(
+        { user_id: target.id, role: "admin" },
+        { onConflict: "user_id,role", ignoreDuplicates: true },
+      );
     if (error) throw new Error(error.message);
     return { ok: true, pending: false, message: "Acesso de administrador concedido." };
   });
@@ -141,6 +165,7 @@ export const revokeAdmin = createServerFn({ method: "POST" })
     if (target?.id === context.userId) throw new Error("Você não pode remover seu próprio acesso.");
 
     await supabaseAdmin.from("admin_invites").delete().eq("email", email);
-    if (target) await supabaseAdmin.from("user_roles").delete().eq("user_id", target.id).eq("role", "admin");
+    if (target)
+      await supabaseAdmin.from("user_roles").delete().eq("user_id", target.id).eq("role", "admin");
     return { ok: true };
   });

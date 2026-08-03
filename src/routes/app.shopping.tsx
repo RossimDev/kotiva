@@ -1,6 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, Trash2, ShoppingCart, ScanLine, ListPlus, Refrigerator, Calculator, Pencil, Layers, Lightbulb } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  ShoppingCart,
+  ScanLine,
+  ListPlus,
+  Refrigerator,
+  Calculator,
+  Pencil,
+  Layers,
+  Lightbulb,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +19,20 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { BarcodeScanner } from "@/components/barcode-scanner";
@@ -17,7 +40,12 @@ import { UNITS } from "@/lib/units";
 import { SHOPPING_CATEGORIES, money } from "@/lib/kotiva";
 import { lookupProduct, saveProductToBase, sectionFor } from "@/lib/barcode";
 import { ShoppingPresets, usePresets } from "@/components/shopping-presets";
-import { buildSuggestions, type HistoryRow, type PresetItem, type Suggestion } from "@/lib/shopping-presets";
+import {
+  buildSuggestions,
+  type HistoryRow,
+  type PresetItem,
+  type Suggestion,
+} from "@/lib/shopping-presets";
 import { normalizeName } from "@/lib/parse-items";
 
 type List = { id: string; name: string; color: string | null; budget: number | null };
@@ -34,11 +62,20 @@ type Item = {
 };
 
 export const Route = createFileRoute("/app/shopping")({
-  head: () => ({ meta: [{ title: "Lista de compras — Kotiva" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Lista de compras — Kotiva" }, { name: "robots", content: "noindex" }],
+  }),
   component: Shopping,
 });
 
-const emptyForm = { name: "", quantity: "1", unit: "un", unit_price: "0", category: "Outros", barcode: "" };
+const emptyForm = {
+  name: "",
+  quantity: "1",
+  unit: "un",
+  unit_price: "0",
+  category: "Outros",
+  barcode: "",
+};
 
 function Shopping() {
   const { user } = useAuth();
@@ -57,7 +94,10 @@ function Shopping() {
   const { presets, reload: reloadPresets } = usePresets();
 
   const loadLists = useCallback(async () => {
-    const { data } = await supabase.from("shopping_lists").select("id,name,color,budget").order("created_at");
+    const { data } = await supabase
+      .from("shopping_lists")
+      .select("id,name,color,budget")
+      .order("created_at");
     const rows = (data as List[]) ?? [];
     setLists(rows);
     setActiveList((cur) => cur ?? rows[0]?.id ?? null);
@@ -96,8 +136,16 @@ function Shopping() {
     if (!user) return;
     const channel = supabase
       .channel("shop-rt")
-      .on("postgres_changes", { event: "*", schema: "public", table: "shopping_items", filter: `user_id=eq.${user.id}` }, () => loadItems())
-      .on("postgres_changes", { event: "*", schema: "public", table: "shopping_lists", filter: `user_id=eq.${user.id}` }, () => loadLists())
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "shopping_items", filter: `user_id=eq.${user.id}` },
+        () => loadItems(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "shopping_lists", filter: `user_id=eq.${user.id}` },
+        () => loadLists(),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -203,12 +251,16 @@ function Shopping() {
         barcode: code,
         name: product.name,
         unit: product.unit || f.unit,
-        category: (SHOPPING_CATEGORIES as readonly string[]).includes(product.category) ? product.category : f.category,
+        category: (SHOPPING_CATEGORIES as readonly string[]).includes(product.category)
+          ? product.category
+          : f.category,
       }));
       toast.success(`Produto: ${product.name}`);
     } else {
       setForm((f) => ({ ...f, barcode: code }));
-      toast.warning("Produto não encontrado. Cadastre o nome — ele será salvo na base para as próximas leituras.");
+      toast.warning(
+        "Produto não encontrado. Cadastre o nome — ele será salvo na base para as próximas leituras.",
+      );
     }
   };
 
@@ -243,7 +295,10 @@ function Shopping() {
       .gte("purchased_at", since)
       .order("purchased_at");
     const rows = (data as HistoryRow[]) ?? [];
-    const list = buildSuggestions(rows, listItems.map((i) => i.name));
+    const list = buildSuggestions(
+      rows,
+      listItems.map((i) => i.name),
+    );
     setSuggestions(list);
     setPicked(Object.fromEntries(list.slice(0, 8).map((s2) => [s2.name, true])));
   };
@@ -287,7 +342,13 @@ function Shopping() {
       })),
     );
     if (error) return toast.error(error.message);
-    await supabase.from("shopping_items").delete().in("id", checked.map((i) => i.id));
+    await supabase
+      .from("shopping_items")
+      .delete()
+      .in(
+        "id",
+        checked.map((i) => i.id),
+      );
     loadItems();
     toast.success(`${checked.length} item(ns) enviados para a geladeira`);
   };
@@ -296,7 +357,11 @@ function Shopping() {
     if (!user || !newList.name.trim()) return;
     const { data, error } = await supabase
       .from("shopping_lists")
-      .insert({ user_id: user.id, name: newList.name.trim(), budget: newList.budget ? Number(newList.budget.replace(",", ".")) : null })
+      .insert({
+        user_id: user.id,
+        name: newList.name.trim(),
+        budget: newList.budget ? Number(newList.budget.replace(",", ".")) : null,
+      })
       .select("id,name,color,budget")
       .single();
     if (error) return toast.error(error.message);
@@ -320,7 +385,9 @@ function Shopping() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-extrabold">Lista de compras</h1>
-          <p className="text-muted-foreground">{listItems.filter((i) => !i.checked).length} pendentes nesta lista</p>
+          <p className="text-muted-foreground">
+            {listItems.filter((i) => !i.checked).length} pendentes nesta lista
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setPresetsOpen(true)}>
@@ -345,7 +412,9 @@ function Shopping() {
               key={l.id}
               onClick={() => setActiveList(l.id)}
               className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-                activeList === l.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"
+                activeList === l.id
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:bg-muted"
               }`}
             >
               {l.name}
@@ -366,11 +435,17 @@ function Shopping() {
         </Card>
         <Card className="p-4">
           <div className="text-xs uppercase text-muted-foreground">Já no carrinho</div>
-          <div className="font-display text-2xl font-extrabold text-accent">{money(totals.bought)}</div>
+          <div className="font-display text-2xl font-extrabold text-accent">
+            {money(totals.bought)}
+          </div>
         </Card>
         <Card className="p-4">
-          <div className="text-xs uppercase text-muted-foreground">{budget ? "Orçamento restante" : "Falta comprar"}</div>
-          <div className={`font-display text-2xl font-extrabold ${budget && totals.total > budget ? "text-destructive" : ""}`}>
+          <div className="text-xs uppercase text-muted-foreground">
+            {budget ? "Orçamento restante" : "Falta comprar"}
+          </div>
+          <div
+            className={`font-display text-2xl font-extrabold ${budget && totals.total > budget ? "text-destructive" : ""}`}
+          >
             {money(budget ? budget - totals.bought : totals.pending)}
           </div>
         </Card>
@@ -386,32 +461,64 @@ function Shopping() {
         >
           <div className="sm:col-span-4">
             <Label className="text-xs">Produto</Label>
-            <Input placeholder="Ex: leite integral" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input
+              placeholder="Ex: leite integral"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
           </div>
           <div className="sm:col-span-2">
             <Label className="text-xs">Qtd.</Label>
-            <Input type="number" min="0" step="0.01" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.quantity}
+              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+            />
           </div>
           <div className="sm:col-span-2">
             <Label className="text-xs">Unidade</Label>
             <Select value={form.unit} onValueChange={(v) => setForm({ ...form, unit: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{UNITS.map((u) => <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>)}</SelectContent>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {UNITS.map((u) => (
+                  <SelectItem key={u.value} value={u.value}>
+                    {u.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <div className="sm:col-span-2">
             <Label className="text-xs">Preço un.</Label>
-            <Input inputMode="decimal" value={form.unit_price} onChange={(e) => setForm({ ...form, unit_price: e.target.value })} />
+            <Input
+              inputMode="decimal"
+              value={form.unit_price}
+              onChange={(e) => setForm({ ...form, unit_price: e.target.value })}
+            />
           </div>
           <div className="sm:col-span-2">
             <Label className="text-xs">Categoria</Label>
             <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{SHOPPING_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SHOPPING_CATEGORIES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <div className="flex gap-2 sm:col-span-12">
-            <Button type="submit" className="shadow-glow"><Plus className="mr-2 h-4 w-4" /> Adicionar</Button>
+            <Button type="submit" className="shadow-glow">
+              <Plus className="mr-2 h-4 w-4" /> Adicionar
+            </Button>
             <Button type="button" variant="outline" onClick={() => setScanning(true)}>
               <ScanLine className="mr-2 h-4 w-4" /> Escanear código / QR
             </Button>
@@ -430,29 +537,51 @@ function Shopping() {
             <Card key={cat} className="overflow-hidden">
               <div className="flex items-center justify-between bg-muted/40 px-4 py-2">
                 <span className="text-sm font-semibold">{cat}</span>
-                <Badge variant="secondary">{money(rows.reduce((s, i) => s + Number(i.quantity ?? 1) * Number(i.unit_price ?? 0), 0))}</Badge>
+                <Badge variant="secondary">
+                  {money(
+                    rows.reduce(
+                      (s, i) => s + Number(i.quantity ?? 1) * Number(i.unit_price ?? 0),
+                      0,
+                    ),
+                  )}
+                </Badge>
               </div>
               <div className="divide-y divide-border">
                 {rows.map((i) => (
-                  <div key={i.id} className={`flex items-center gap-3 p-4 ${i.checked ? "opacity-60" : ""}`}>
+                  <div
+                    key={i.id}
+                    className={`flex items-center gap-3 p-4 ${i.checked ? "opacity-60" : ""}`}
+                  >
                     <Checkbox checked={i.checked} onCheckedChange={() => toggle(i)} />
                     <div className="flex-1">
-                      <div className={`font-medium ${i.checked ? "line-through" : ""}`}>{i.name}</div>
+                      <div className={`font-medium ${i.checked ? "line-through" : ""}`}>
+                        {i.name}
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {Number(i.quantity ?? 1)} {i.unit ?? "un"} × {money(i.unit_price)}
                       </div>
                     </div>
-                    <div className="font-display font-bold">{money(Number(i.quantity ?? 1) * Number(i.unit_price ?? 0))}</div>
-                    <Button variant="ghost" size="icon" onClick={() => setEditing(i)}><Pencil className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => remove(i.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    <div className="font-display font-bold">
+                      {money(Number(i.quantity ?? 1) * Number(i.unit_price ?? 0))}
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setEditing(i)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => remove(i.id)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                   </div>
                 ))}
               </div>
             </Card>
           ))}
           <Card className="flex items-center justify-between p-4">
-            <span className="flex items-center gap-2 text-sm font-semibold"><Calculator className="h-4 w-4" /> Total da lista</span>
-            <span className="font-display text-2xl font-extrabold text-primary">{money(totals.total)}</span>
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              <Calculator className="h-4 w-4" /> Total da lista
+            </span>
+            <span className="font-display text-2xl font-extrabold text-primary">
+              {money(totals.total)}
+            </span>
           </Card>
         </div>
       )}
@@ -474,18 +603,24 @@ function Shopping() {
       <Dialog open={sugOpen} onOpenChange={setSugOpen}>
         <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Lightbulb className="h-5 w-5 text-primary" /> Sugestão de compra</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-primary" /> Sugestão de compra
+            </DialogTitle>
           </DialogHeader>
           {suggestions === null ? (
             <p className="text-sm text-muted-foreground">Analisando seu histórico de compras...</p>
           ) : suggestions.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Ainda não temos histórico suficiente. Marque os itens como comprados nas suas listas e em algumas semanas as sugestões aparecem aqui.
+              Ainda não temos histórico suficiente. Marque os itens como comprados nas suas listas e
+              em algumas semanas as sugestões aparecem aqui.
             </p>
           ) : (
             <div className="space-y-2">
               {suggestions.map((s2) => (
-                <label key={s2.name} className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
+                <label
+                  key={s2.name}
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3"
+                >
                   <Checkbox
                     checked={!!picked[s2.name]}
                     onCheckedChange={(v) => setPicked((cur) => ({ ...cur, [s2.name]: !!v }))}
@@ -494,14 +629,20 @@ function Shopping() {
                     <div className="text-sm font-medium">{s2.name}</div>
                     <div className="text-xs text-muted-foreground">{s2.reason}</div>
                   </div>
-                  <Badge variant="secondary">{s2.quantity} {s2.unit}</Badge>
+                  <Badge variant="secondary">
+                    {s2.quantity} {s2.unit}
+                  </Badge>
                 </label>
               ))}
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSugOpen(false)}>Fechar</Button>
-            <Button onClick={addSuggestions} disabled={!suggestions || suggestions.length === 0}>Adicionar à lista</Button>
+            <Button variant="outline" onClick={() => setSugOpen(false)}>
+              Fechar
+            </Button>
+            <Button onClick={addSuggestions} disabled={!suggestions || suggestions.length === 0}>
+              Adicionar à lista
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -510,55 +651,107 @@ function Shopping() {
 
       <Dialog open={newListOpen} onOpenChange={setNewListOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Nova lista</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Nova lista</DialogTitle>
+          </DialogHeader>
           <div className="space-y-3">
             <div>
               <Label>Nome</Label>
-              <Input value={newList.name} onChange={(e) => setNewList({ ...newList, name: e.target.value })} placeholder="Ex: Churrasco de sábado" />
+              <Input
+                value={newList.name}
+                onChange={(e) => setNewList({ ...newList, name: e.target.value })}
+                placeholder="Ex: Churrasco de sábado"
+              />
             </div>
             <div>
               <Label>Orçamento (opcional)</Label>
-              <Input inputMode="decimal" value={newList.budget} onChange={(e) => setNewList({ ...newList, budget: e.target.value })} placeholder="Ex: 350" />
+              <Input
+                inputMode="decimal"
+                value={newList.budget}
+                onChange={(e) => setNewList({ ...newList, budget: e.target.value })}
+                placeholder="Ex: 350"
+              />
             </div>
           </div>
-          <DialogFooter><Button onClick={createList}>Criar lista</Button></DialogFooter>
+          <DialogFooter>
+            <Button onClick={createList}>Criar lista</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={!!editing} onOpenChange={(v) => !v && setEditing(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Editar item</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Editar item</DialogTitle>
+          </DialogHeader>
           {editing && (
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <Label>Nome</Label>
-                <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
+                <Input
+                  value={editing.name}
+                  onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                />
               </div>
               <div>
                 <Label>Quantidade</Label>
-                <Input type="number" step="0.01" value={editing.quantity ?? 1} onChange={(e) => setEditing({ ...editing, quantity: Number(e.target.value) })} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={editing.quantity ?? 1}
+                  onChange={(e) => setEditing({ ...editing, quantity: Number(e.target.value) })}
+                />
               </div>
               <div>
                 <Label>Unidade</Label>
-                <Select value={editing.unit ?? "un"} onValueChange={(v) => setEditing({ ...editing, unit: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{UNITS.map((u) => <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>)}</SelectContent>
+                <Select
+                  value={editing.unit ?? "un"}
+                  onValueChange={(v) => setEditing({ ...editing, unit: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {UNITS.map((u) => (
+                      <SelectItem key={u.value} value={u.value}>
+                        {u.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label>Preço unitário</Label>
-                <Input type="number" step="0.01" value={editing.unit_price ?? 0} onChange={(e) => setEditing({ ...editing, unit_price: Number(e.target.value) })} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={editing.unit_price ?? 0}
+                  onChange={(e) => setEditing({ ...editing, unit_price: Number(e.target.value) })}
+                />
               </div>
               <div>
                 <Label>Categoria</Label>
-                <Select value={editing.category ?? "Outros"} onValueChange={(v) => setEditing({ ...editing, category: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{SHOPPING_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                <Select
+                  value={editing.category ?? "Outros"}
+                  onValueChange={(v) => setEditing({ ...editing, category: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SHOPPING_CATEGORIES.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>
           )}
-          <DialogFooter><Button onClick={saveEdit}>Salvar</Button></DialogFooter>
+          <DialogFooter>
+            <Button onClick={saveEdit}>Salvar</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

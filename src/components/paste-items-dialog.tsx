@@ -5,8 +5,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UNITS } from "@/lib/units";
 import { parseItemsText, type ParsedItem } from "@/lib/parse-items";
 
@@ -18,7 +30,13 @@ type Props = {
   onConfirm: (items: ParsedItem[]) => void | Promise<void>;
 };
 
-export function PasteItemsDialog({ open, onOpenChange, title = "Colar e separar produtos", saving, onConfirm }: Props) {
+export function PasteItemsDialog({
+  open,
+  onOpenChange,
+  title = "Colar e separar produtos",
+  saving,
+  onConfirm,
+}: Props) {
   const [text, setText] = useState("");
   const [items, setItems] = useState<ParsedItem[]>([]);
 
@@ -58,7 +76,8 @@ export function PasteItemsDialog({ open, onOpenChange, title = "Colar e separar 
               onChange={(e) => parse(e.target.value)}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Reconhecemos quantidades e unidades automaticamente. Sem quantidade, assumimos 1 unidade.
+              Reconhecemos quantidades e unidades automaticamente. Sem quantidade, assumimos 1
+              unidade.
             </p>
           </div>
 
@@ -66,25 +85,45 @@ export function PasteItemsDialog({ open, onOpenChange, title = "Colar e separar 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm font-semibold">
-                  <Wand2 className="h-4 w-4 text-primary" /> Prévia ({items.length} produto{items.length > 1 ? "s" : ""})
+                  <Wand2 className="h-4 w-4 text-primary" /> Prévia ({items.length} produto
+                  {items.length > 1 ? "s" : ""})
                 </span>
-                <Button variant="ghost" size="sm" onClick={() => setItems([])}>Limpar</Button>
+                <Button variant="ghost" size="sm" onClick={() => setItems([])}>
+                  Limpar
+                </Button>
               </div>
               <div className="space-y-2">
                 {items.map((i, idx) => (
-                  <div key={idx} className="grid grid-cols-12 items-center gap-2 rounded-lg border border-border p-2">
-                    <Input className="col-span-6" value={i.name} onChange={(e) => update(idx, { name: e.target.value })} />
+                  <div
+                    key={idx}
+                    className="grid grid-cols-12 items-center gap-2 rounded-lg border border-border p-2"
+                  >
+                    <Input
+                      className="col-span-6"
+                      value={i.name}
+                      onChange={(e) => update(idx, { name: e.target.value })}
+                    />
                     <Input
                       className="col-span-2"
                       type="number"
                       min="0"
                       step="0.01"
                       value={i.quantity}
-                      onChange={(e) => update(idx, { quantity: Number(e.target.value) || 1, hasQuantity: true })}
+                      onChange={(e) =>
+                        update(idx, { quantity: Number(e.target.value) || 1, hasQuantity: true })
+                      }
                     />
                     <Select value={i.unit} onValueChange={(v) => update(idx, { unit: v })}>
-                      <SelectTrigger className="col-span-3"><SelectValue /></SelectTrigger>
-                      <SelectContent>{UNITS.map((u) => <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>)}</SelectContent>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {UNITS.map((u) => (
+                          <SelectItem key={u.value} value={u.value}>
+                            {u.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <Button
                       variant="ghost"
@@ -96,7 +135,9 @@ export function PasteItemsDialog({ open, onOpenChange, title = "Colar e separar 
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                     {!i.hasQuantity && (
-                      <Badge variant="secondary" className="col-span-12 w-fit text-[10px]">Quantidade não informada — assumido 1</Badge>
+                      <Badge variant="secondary" className="col-span-12 w-fit text-[10px]">
+                        Quantidade não informada — assumido 1
+                      </Badge>
                     )}
                   </div>
                 ))}
@@ -106,7 +147,9 @@ export function PasteItemsDialog({ open, onOpenChange, title = "Colar e separar 
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => close(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => close(false)}>
+            Cancelar
+          </Button>
           <Button disabled={items.length === 0 || saving} onClick={() => onConfirm(items)}>
             {saving ? "Salvando..." : `Adicionar ${items.length || ""} item(ns)`}
           </Button>

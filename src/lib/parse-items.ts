@@ -8,21 +8,46 @@ export type ParsedItem = {
 };
 
 const UNIT_ALIASES: Record<string, string> = {
-  un: "un", uns: "un", unid: "un", unidade: "un", unidades: "un",
-  pct: "pct", pacote: "pct", pacotes: "pct",
-  cx: "cx", caixa: "cx", caixas: "cx",
-  dz: "dz", duzia: "dz", duzias: "dz",
-  l: "L", lt: "L", litro: "L", litros: "L",
+  un: "un",
+  uns: "un",
+  unid: "un",
+  unidade: "un",
+  unidades: "un",
+  pct: "pct",
+  pacote: "pct",
+  pacotes: "pct",
+  cx: "cx",
+  caixa: "cx",
+  caixas: "cx",
+  dz: "dz",
+  duzia: "dz",
+  duzias: "dz",
+  l: "L",
+  lt: "L",
+  litro: "L",
+  litros: "L",
   ml: "ml",
-  kg: "kg", quilo: "kg", quilos: "kg", kilo: "kg", kilos: "kg",
-  g: "g", grama: "g", gramas: "g",
+  kg: "kg",
+  quilo: "kg",
+  quilos: "kg",
+  kilo: "kg",
+  kilos: "kg",
+  g: "g",
+  grama: "g",
+  gramas: "g",
   mg: "mg",
-  fatia: "fatia", fatias: "fatia",
-  garrafa: "garrafa", garrafas: "garrafa",
-  lata: "lata", latas: "lata",
-  pote: "pote", potes: "pote",
-  saco: "saco", sacos: "saco",
-  bandeja: "bandeja", bandejas: "bandeja",
+  fatia: "fatia",
+  fatias: "fatia",
+  garrafa: "garrafa",
+  garrafas: "garrafa",
+  lata: "lata",
+  latas: "lata",
+  pote: "pote",
+  potes: "pote",
+  saco: "saco",
+  sacos: "saco",
+  bandeja: "bandeja",
+  bandejas: "bandeja",
 };
 
 const VALID_UNITS = new Set<string>(UNITS.map((u) => u.value));
@@ -30,7 +55,10 @@ const VALID_UNITS = new Set<string>(UNITS.map((u) => u.value));
 const STOP_PREFIX = /^(?:[-*•·–—]+|\d+[.)])\s*/;
 
 const deaccent = (s: string) =>
-  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 
 /** Singulariza formas simples do português (leites -> leite, maçãs -> maçã). */
 function singularize(word: string) {
@@ -49,14 +77,19 @@ function titleCase(s: string) {
   return s
     .split(/\s+/)
     .filter(Boolean)
-    .map((w, i) => (i > 0 && small.has(deaccent(w)) ? deaccent(w) : w.charAt(0).toUpperCase() + w.slice(1)))
+    .map((w, i) =>
+      i > 0 && small.has(deaccent(w)) ? deaccent(w) : w.charAt(0).toUpperCase() + w.slice(1),
+    )
     .join(" ");
 }
 
 function parseOne(raw: string): ParsedItem | null {
   let text = raw.trim().replace(STOP_PREFIX, "").replace(/\s+/g, " ");
   // remove marcações de checkbox e emojis simples
-  text = text.replace(/^\[[ xX]?\]\s*/, "").replace(/[\u2600-\u27bf\ud83c-\udbff\udc00-\udfff]/g, "").trim();
+  text = text
+    .replace(/^\[[ xX]?\]\s*/, "")
+    .replace(/[\u2600-\u27bf\ud83c-\udbff\udc00-\udfff]/g, "")
+    .trim();
   if (!text) return null;
 
   let quantity = 1;
@@ -71,7 +104,9 @@ function parseOne(raw: string): ParsedItem | null {
     text = xMatch[2];
   } else {
     // "2 kg de arroz" | "500g açúcar" | "3 maçãs"
-    const numMatch = text.match(/^(\d+(?:[.,]\d+)?)\s*([a-zA-ZçÇãáéíóúÁÉÍÓÚ]+)?\s*(?:de\s+|do\s+|da\s+)?(.*)$/);
+    const numMatch = text.match(
+      /^(\d+(?:[.,]\d+)?)\s*([a-zA-ZçÇãáéíóúÁÉÍÓÚ]+)?\s*(?:de\s+|do\s+|da\s+)?(.*)$/,
+    );
     if (numMatch?.[1]) {
       const maybeUnit = numMatch[2] ? UNIT_ALIASES[deaccent(numMatch[2])] : undefined;
       const rest = (numMatch[3] ?? "").trim();
@@ -105,7 +140,10 @@ function parseOne(raw: string): ParsedItem | null {
     text = text.replace(suffix[0], "");
   }
 
-  text = text.replace(/^(?:de|do|da)\s+/i, "").replace(/[.;,]+$/, "").trim();
+  text = text
+    .replace(/^(?:de|do|da)\s+/i, "")
+    .replace(/[.;,]+$/, "")
+    .trim();
   if (!text || /^\d+$/.test(text)) return null;
 
   // pluraliza de volta ao singular quando há quantidade

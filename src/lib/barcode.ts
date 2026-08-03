@@ -39,7 +39,12 @@ export function sectionFor(category: string | null | undefined): ProductSection 
 }
 
 /** Busca o código na base compartilhada e, se não achar, tenta a base pública da web. */
-export async function lookupProduct(code: string, webLookup?: (args: { data: { barcode: string } }) => Promise<{ found: boolean; name: string | null; category: string | null }>): Promise<BarcodeProduct> {
+export async function lookupProduct(
+  code: string,
+  webLookup?: (args: {
+    data: { barcode: string };
+  }) => Promise<{ found: boolean; name: string | null; category: string | null }>,
+): Promise<BarcodeProduct> {
   const clean = code.trim();
   const { data } = await supabase
     .from("product_barcodes")
@@ -77,7 +82,15 @@ export async function lookupProduct(code: string, webLookup?: (args: { data: { b
     /* offline ou serviço indisponível */
   }
 
-  return { code: clean, name: "", brand: null, category: "Outros", section: "despensa", unit: "un", source: "none" };
+  return {
+    code: clean,
+    name: "",
+    brand: null,
+    category: "Outros",
+    section: "despensa",
+    unit: "un",
+    source: "none",
+  };
 }
 
 /** Alimenta a base compartilhada com um produto cadastrado manualmente. */
@@ -91,7 +104,11 @@ export async function saveProductToBase(input: {
   userId: string;
 }) {
   if (!input.code.trim() || !input.name.trim()) return;
-  const { data: existing } = await supabase.from("product_barcodes").select("id").eq("code", input.code.trim()).maybeSingle();
+  const { data: existing } = await supabase
+    .from("product_barcodes")
+    .select("id")
+    .eq("code", input.code.trim())
+    .maybeSingle();
   if (existing) return;
   await supabase.from("product_barcodes").insert({
     code: input.code.trim().slice(0, 40),

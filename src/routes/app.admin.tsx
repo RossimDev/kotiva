@@ -1,7 +1,19 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Users, Mail, Package, ChefHat, Shield, ShoppingCart, Crown, Barcode, PawPrint, UserPlus, Trash2 } from "lucide-react";
+import {
+  Users,
+  Mail,
+  Package,
+  ChefHat,
+  Shield,
+  ShoppingCart,
+  Crown,
+  Barcode,
+  PawPrint,
+  UserPlus,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { Card } from "@/components/ui/card";
@@ -11,7 +23,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { getAdminStats, grantAdmin, listAdmins, revokeAdmin, type AdminStats } from "@/lib/admin.functions";
+import {
+  getAdminStats,
+  grantAdmin,
+  listAdmins,
+  revokeAdmin,
+  type AdminStats,
+} from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/app/admin")({
   head: () => ({ meta: [{ title: "Admin — Kotiva" }, { name: "robots", content: "noindex" }] }),
@@ -19,7 +37,10 @@ export const Route = createFileRoute("/app/admin")({
 });
 
 type Msg = { id: string; name: string; email: string; message: string; created_at: string };
-type AdminsData = { admins: Array<{ userId: string; email: string }>; invites: Array<{ email: string; createdAt: string }> };
+type AdminsData = {
+  admins: Array<{ userId: string; email: string }>;
+  invites: Array<{ email: string; createdAt: string }>;
+};
 
 function Admin() {
   const { user } = useAuth();
@@ -44,21 +65,31 @@ function Admin() {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle().then(async ({ data }) => {
-      if (!data) {
-        setOk(false);
-        navigate({ to: "/app/dashboard" });
-        return;
-      }
-      setOk(true);
-      const { data: m } = await supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(20);
-      setMsgs((m as Msg[]) ?? []);
-      try {
-        await refresh();
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Falha ao carregar métricas");
-      }
-    });
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (!data) {
+          setOk(false);
+          navigate({ to: "/app/dashboard" });
+          return;
+        }
+        setOk(true);
+        const { data: m } = await supabase
+          .from("contact_messages")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(20);
+        setMsgs((m as Msg[]) ?? []);
+        try {
+          await refresh();
+        } catch (e) {
+          toast.error(e instanceof Error ? e.message : "Falha ao carregar métricas");
+        }
+      });
   }, [user, navigate, refresh]);
 
   const grant = async () => {
@@ -104,7 +135,9 @@ function Admin() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="font-display text-3xl font-extrabold flex items-center gap-2"><Shield className="h-7 w-7 text-primary" /> Painel Admin</h1>
+        <h1 className="font-display text-3xl font-extrabold flex items-center gap-2">
+          <Shield className="h-7 w-7 text-primary" /> Painel Admin
+        </h1>
         <p className="text-muted-foreground">Visão geral do uso do Kotiva.</p>
       </div>
 
@@ -135,11 +168,19 @@ function Admin() {
 
       <Card className="p-6">
         <h2 className="font-display text-lg font-bold">Conceder acesso de administrador</h2>
-        <p className="text-sm text-muted-foreground">Informe o e-mail da pessoa. Se ela ainda não tiver conta, o acesso é aplicado no primeiro cadastro.</p>
+        <p className="text-sm text-muted-foreground">
+          Informe o e-mail da pessoa. Se ela ainda não tiver conta, o acesso é aplicado no primeiro
+          cadastro.
+        </p>
         <div className="mt-4 flex flex-wrap items-end gap-3">
           <div className="min-w-64 flex-1">
             <Label className="text-xs">E-mail</Label>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="pessoa@email.com" />
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="pessoa@email.com"
+            />
           </div>
           <Button onClick={grant} disabled={granting}>
             <UserPlus className="mr-2 h-4 w-4" /> {granting ? "Concedendo..." : "Conceder admin"}
@@ -148,12 +189,20 @@ function Admin() {
 
         <div className="mt-5 space-y-2">
           {admins.admins.map((a) => (
-            <div key={a.userId} className="flex items-center justify-between rounded-lg border border-border p-3">
+            <div
+              key={a.userId}
+              className="flex items-center justify-between rounded-lg border border-border p-3"
+            >
               <span className="text-sm">{a.email}</span>
               <div className="flex items-center gap-2">
                 <Badge variant="secondary">Admin ativo</Badge>
                 {a.email !== user?.email && (
-                  <Button variant="ghost" size="icon" onClick={() => revoke(a.email)} aria-label={`Remover ${a.email}`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => revoke(a.email)}
+                    aria-label={`Remover ${a.email}`}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 )}
@@ -161,13 +210,23 @@ function Admin() {
             </div>
           ))}
           {admins.invites
-            .filter((i) => !admins.admins.some((a) => a.email.toLowerCase() === i.email.toLowerCase()))
+            .filter(
+              (i) => !admins.admins.some((a) => a.email.toLowerCase() === i.email.toLowerCase()),
+            )
             .map((i) => (
-              <div key={i.email} className="flex items-center justify-between rounded-lg border border-dashed border-border p-3">
+              <div
+                key={i.email}
+                className="flex items-center justify-between rounded-lg border border-dashed border-border p-3"
+              >
                 <span className="text-sm text-muted-foreground">{i.email}</span>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">Aguardando cadastro</Badge>
-                  <Button variant="ghost" size="icon" onClick={() => revoke(i.email)} aria-label={`Cancelar convite ${i.email}`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => revoke(i.email)}
+                    aria-label={`Cancelar convite ${i.email}`}
+                  >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -180,11 +239,15 @@ function Admin() {
         <h2 className="font-display text-lg font-bold">Usuários recentes</h2>
         <div className="mt-4 space-y-2">
           {(stats?.recent ?? []).map((u) => (
-            <div key={u.email} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 text-sm">
+            <div
+              key={u.email}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 text-sm"
+            >
               <span>{u.email}</span>
               <span className="text-xs text-muted-foreground">
                 Criado em {u.createdAt ? new Date(u.createdAt).toLocaleDateString("pt-BR") : "—"} ·{" "}
-                último acesso {u.lastSignInAt ? new Date(u.lastSignInAt).toLocaleDateString("pt-BR") : "nunca"}
+                último acesso{" "}
+                {u.lastSignInAt ? new Date(u.lastSignInAt).toLocaleDateString("pt-BR") : "nunca"}
               </span>
             </div>
           ))}
@@ -193,13 +256,17 @@ function Admin() {
 
       <Card className="p-6">
         <h2 className="font-display text-lg font-bold">Mensagens recentes</h2>
-        {msgs.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nenhuma mensagem.</p> : (
+        {msgs.length === 0 ? (
+          <p className="mt-3 text-sm text-muted-foreground">Nenhuma mensagem.</p>
+        ) : (
           <div className="mt-4 space-y-3">
             {msgs.map((m) => (
               <div key={m.id} className="rounded-lg border border-border p-4">
                 <div className="flex justify-between text-sm">
                   <span className="font-semibold">{m.name}</span>
-                  <span className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleString("pt-BR")}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(m.created_at).toLocaleString("pt-BR")}
+                  </span>
                 </div>
                 <div className="text-xs text-muted-foreground">{m.email}</div>
                 <p className="mt-2 text-sm">{m.message}</p>
