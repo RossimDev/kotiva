@@ -1,0 +1,140 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+async function assertAdmin(context: { supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown }> }; userId: string }) {
+  const { data } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+  if (data !== true) throw new Error("Acesso restrito a administradores");
+}
+
+export type AdminStats = {
+  users: number;
+  newUsers7d: number;
+  admins: number;
+  activeSubscriptions: number;
+  fridgeItems: number;
+  shoppingItems: number;
+  recipes: number;
+  pets: number;
+  barcodes: number;
+  messages: number;
+  recent: Array<{ email: string; createdAt: string; lastSignInAt: string | null }>;
+  signupsByDay: Array<{ day: string; count: number }>;
+};
+
+export const getAdminStats = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AdminStats> => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: userList } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const users = userList?.users ?? [];
+    const now = Date.now();
+    const week = 7 * 86400000;
+
+    const count = async (table: string, filter?: (q: never) => unknown) => {
+      let q = supabaseAdmin.from(table).select("id", { count: "exact", head: true });
+      if (filter) q = filter(q as never) as typeof q;
+      const { count: c } = await q;
+      return c ?? 0;
+    };
+
+    const [fridgeItems, shoppingItems, recipes, pets, barcodes, messages, admins, activeSubscriptions] = await Promise.all([
+      count("fridge_items"),
+      count("shopping_items"),
+      count("saved_recipes"),
+      count("pets"),
+      count("product_barcodes"),
+      count("contact_messages"),
+      count("user_roles", (q) => (q as unknown as { eq: (a: string, b: string) => unknown }).eq("role", "admin")),
+      count("subscriptions", (q) => (q as unknown as { eq: (a: string, b: string) => unknown }).eq("status", "active")),
+    ]);
+
+    const signups = new Map<string, number>();
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(now - i * 86400000).toISOString().slice(0, 10);
+      signups.set(d, 0);
+    }
+    for (const u of users) {
+      const day = (u.created_at ?? "").slice(0, 10);
+      if (signups.has(day)) signups.set(day, (signups.get(day) ?? 0) + 1);
+    }
+
+    return {
+      users: users.length,
+      newUsers7d: users.filter((u) => u.created_at && now - new Date(u.created_at).getTime() < week).length,
+      admins,
+      activeSubscriptions,
+      fridgeItems,
+      shoppingItems,
+      recipes,
+      pets,
+      barcodes,
+      messages,
+      recent: users
+        .slice()
+        .sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime())
+        .slice(0, 12)
+        .map((u) => ({ email: u.email ?? "—", createdAt: u.created_at ?? "", lastSignInAt: u.last_sign_in_at ?? null })),
+      signupsByDay: [...signups.entries()].map(([day, c]) => ({ day: day.slice(5), count: c })),
+    };
+  });
+
+export const listAdmins = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [{ data: roles }, { data: userList }, { data: invites }] = await Promise.all([
+      supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin"),
+      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+      supabaseAdmin.from("admin_invites").select("email,created_at").order("created_at"),
+    ]);
+    const byId = new Map((userList?.users ?? []).map((u) => [u.id, u.email ?? ""]));
+    return {
+      admins: (roles ?? []).map((r) => ({ userId: r.user_id, email: byId.get(r.user_id) ?? "(conta removida)" })),
+      invites: (invites ?? []).map((i) => ({ email: i.email, createdAt: i.created_at })),
+    };
+  });
+
+const EmailInput = z.object({ email: z.string().trim().email().max(255) });
+
+export const grantAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => EmailInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email = data.email.toLowerCase();
+
+    await supabaseAdmin.from("admin_invites").upsert({ email, invited_by: context.userId }, { onConflict: "email" });
+
+    const { data: userList } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const target = (userList?.users ?? []).find((u) => (u.email ?? "").toLowerCase() === email);
+    if (!target) return { ok: true, pending: true, message: "E-mail autorizado. O acesso admin será aplicado assim que a pessoa criar a conta." };
+
+    const { error } = await supabaseAdmin.from("user_roles").upsert(
+      { user_id: target.id, role: "admin" },
+      { onConflict: "user_id,role", ignoreDuplicates: true },
+    );
+    if (error) throw new Error(error.message);
+    return { ok: true, pending: false, message: "Acesso de administrador concedido." };
+  });
+
+export const revokeAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => EmailInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email = data.email.toLowerCase();
+
+    const { data: userList } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const target = (userList?.users ?? []).find((u) => (u.email ?? "").toLowerCase() === email);
+    if (target?.id === context.userId) throw new Error("Você não pode remover seu próprio acesso.");
+
+    await supabaseAdmin.from("admin_invites").delete().eq("email", email);
+    if (target) await supabaseAdmin.from("user_roles").delete().eq("user_id", target.id).eq("role", "admin");
+    return { ok: true };
+  });
