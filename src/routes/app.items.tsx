@@ -133,6 +133,22 @@ function Items() {
     setSaving(false);
 
     if (error) return toast.error(error.message);
+
+    // Alimenta a base compartilhada de códigos de barras
+    if (payload.barcode) {
+      const categoryName = payload.category ?? "Outros";
+      const known = (SHOPPING_CATEGORIES as readonly string[]).includes(categoryName) ? categoryName : "Outros";
+      await saveProductToBase({
+        code: payload.barcode,
+        name: payload.name,
+        category: known,
+        section: scanSection ?? sectionFor(known),
+        unit: payload.unit,
+        userId: user.id,
+      });
+    }
+
+    setScanSection(null);
     toast.success(editingId ? "Item atualizado" : "Item adicionado");
     setOpen(false);
     setEditingId(null);
