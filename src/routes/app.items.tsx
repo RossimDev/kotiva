@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2, Package, ScanLine, Pencil, Tags, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Package, ScanLine, Pencil, Tags, AlertTriangle, ClipboardPaste } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { CategoryManager, useCategories } from "@/components/category-manager";
 import { UNITS, daysUntil, expiryStatus } from "@/lib/units";
+import { PasteItemsDialog } from "@/components/paste-items-dialog";
+import { lookupProduct, saveProductToBase, sectionFor, SECTION_LABEL, type ProductSection } from "@/lib/barcode";
+import { SHOPPING_CATEGORIES } from "@/lib/kotiva";
 
 type Item = {
   id: string;
@@ -58,6 +61,9 @@ function Items() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [q, setQ] = useState("");
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [pasteSaving, setPasteSaving] = useState(false);
+  const [scanSection, setScanSection] = useState<ProductSection | null>(null);
   const [filterCat, setFilterCat] = useState<string>("all");
 
   const load = () =>
@@ -163,6 +169,9 @@ function Items() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setPasteOpen(true)}>
+            <ClipboardPaste className="mr-2 h-4 w-4" /> Colar lista
+          </Button>
           <Button variant="outline" onClick={() => setCatsOpen(true)}>
             <Tags className="mr-2 h-4 w-4" /> Categorias
           </Button>
@@ -337,13 +346,47 @@ function Items() {
         </DialogContent>
       </Dialog>
 
+      <PasteItemsDialog
+        open={pasteOpen}
+        onOpenChange={setPasteOpen}
+        saving={pasteSaving}
+        title="Colar e separar produtos"
+        onConfirm={async (parsed) => {
+          if (!user) return;
+          setPasteSaving(true);
+          const { error } = await supabase.from("fridge_items").insert(
+            parsed.map((p) => ({ user_id: user.id, name: p.name, quantity: p.quantity, unit: p.unit })),
+          );
+          setPasteSaving(false);
+          if (error) return toast.error(error.message);
+          toast.success(`${parsed.length} produto(s) adicionados`);
+          setPasteOpen(false);
+          load();
+        }}
+      />
+
       <CategoryManager open={catsOpen} onOpenChange={setCatsOpen} categories={categories} />
       <BarcodeScanner
         open={scanOpen}
         onOpenChange={setScanOpen}
-        onDetected={(code) => {
+        onDetected={async (code) => {
           setForm((f) => ({ ...f, barcode: code }));
-          toast.success(`Código lido: ${code}`);
+          const product = await lookupProduct(code);
+          if (product.name) {
+            const cat = categories.find((c) => c.name.toLowerCase() === product.category.toLowerCase());
+            setScanSection(product.section);
+            setForm((f) => ({
+              ...f,
+              barcode: code,
+              name: product.name,
+              unit: product.unit || f.unit,
+              category_id: cat?.id ?? f.category_id,
+            }));
+            toast.success(`${product.name} · ${SECTION_LABEL[product.section]}`);
+          } else {
+            setScanSection(null);
+            toast.warning("Produto não encontrado na base — cadastre e ele ficará salvo para todos");
+          }
         }}
       />
     </div>
