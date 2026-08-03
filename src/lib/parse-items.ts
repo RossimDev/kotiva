@@ -25,7 +25,7 @@ const UNIT_ALIASES: Record<string, string> = {
   bandeja: "bandeja", bandejas: "bandeja",
 };
 
-const VALID_UNITS = new Set(UNITS.map((u) => u.value));
+const VALID_UNITS = new Set<string>(UNITS.map((u) => u.value));
 
 const STOP_PREFIX = /^(?:[-*•·–—]+|\d+[.)])\s*/;
 
