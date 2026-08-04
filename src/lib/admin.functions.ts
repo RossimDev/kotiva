@@ -169,6 +169,7 @@ export const grantAdmin = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => EmailInput.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    await guardAdminRate(context.userId, "grant-admin", 15);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const email = data.email.toLowerCase();
 
@@ -193,6 +194,13 @@ export const grantAdmin = createServerFn({ method: "POST" })
         { onConflict: "user_id,role", ignoreDuplicates: true },
       );
     if (error) throw new Error(error.message);
+    await audit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string } | undefined)?.email ?? null,
+      action: "grant_admin",
+      targetEmail: email,
+      targetUserId: target.id,
+    });
     return { ok: true, pending: false, message: "Acesso de administrador concedido." };
   });
 
@@ -211,6 +219,13 @@ export const revokeAdmin = createServerFn({ method: "POST" })
     await supabaseAdmin.from("admin_invites").delete().eq("email", email);
     if (target)
       await supabaseAdmin.from("user_roles").delete().eq("user_id", target.id).eq("role", "admin");
+    await audit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string } | undefined)?.email ?? null,
+      action: "revoke_admin",
+      targetEmail: email,
+      targetUserId: target?.id ?? null,
+    });
     return { ok: true };
   });
 
