@@ -2,7 +2,7 @@ import { Barcode, Check, Package, Tag, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { brl } from "@/lib/kotiva";
+import { money } from "@/lib/kotiva";
 import type { BarcodeProduct } from "@/lib/barcode";
 
 const SECTION_LABEL: Record<string, string> = {
@@ -69,7 +69,7 @@ export function ProductInfoCard({
           <div className="mt-2 text-xs text-muted-foreground">
             {product.lastPrice != null ? (
               <>
-                Último preço pago: <strong>{brl(product.lastPrice)}</strong>
+                Último preço pago: <strong>{money(product.lastPrice)}</strong>
                 {product.lastPurchasedAt
                   ? ` em ${new Date(product.lastPurchasedAt).toLocaleDateString("pt-BR")}`
                   : ""}
