@@ -17,8 +17,28 @@ export type BarcodeProduct = {
   category: string;
   section: ProductSection;
   unit: string;
+  /** Último preço unitário pago pelo usuário (histórico de compras). */
+  lastPrice: number | null;
+  lastPurchasedAt: string | null;
   source: "base" | "web" | "none";
 };
+
+/** Busca o preço mais recente pago pelo usuário para um produto. */
+async function lastPriceFor(name: string, userId?: string) {
+  if (!userId || !name.trim()) return { lastPrice: null, lastPurchasedAt: null };
+  const { data } = await supabase
+    .from("purchase_history")
+    .select("unit_price,purchased_at")
+    .eq("user_id", userId)
+    .eq("normalized_name", name.trim().toLowerCase())
+    .order("purchased_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return {
+    lastPrice: data ? Number(data.unit_price) : null,
+    lastPurchasedAt: data?.purchased_at ?? null,
+  };
+}
 
 const SECTION_BY_CATEGORY: Record<string, ProductSection> = {
   Hortifruti: "geladeira",
@@ -44,6 +64,7 @@ export async function lookupProduct(
   webLookup?: (args: {
     data: { barcode: string };
   }) => Promise<{ found: boolean; name: string | null; category: string | null }>,
+  userId?: string,
 ): Promise<BarcodeProduct> {
   const clean = code.trim();
   const { data } = await supabase
@@ -53,7 +74,9 @@ export async function lookupProduct(
     .maybeSingle();
 
   if (data) {
+    const price = await lastPriceFor(data.name, userId);
     return {
+      ...price,
       code: clean,
       name: data.name,
       brand: data.brand,
@@ -68,7 +91,9 @@ export async function lookupProduct(
     const fn = webLookup ?? ((args: { data: { barcode: string } }) => lookupBarcode(args));
     const res = await fn({ data: { barcode: clean } });
     if (res.found && res.name) {
+      const price = await lastPriceFor(res.name, userId);
       return {
+        ...price,
         code: clean,
         name: res.name,
         brand: null,
@@ -83,6 +108,8 @@ export async function lookupProduct(
   }
 
   return {
+    lastPrice: null,
+    lastPurchasedAt: null,
     code: clean,
     name: "",
     brand: null,

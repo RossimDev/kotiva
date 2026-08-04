@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 
-type Ctx = { supabase: SupabaseClient<Database>; userId: string };
+type Ctx = { supabase: SupabaseClient<Database>; userId: string; claims?: { email?: string } };
 
 async function assertAdmin(context: Ctx) {
   const { data } = await context.supabase.rpc("has_role", {
@@ -13,6 +13,50 @@ async function assertAdmin(context: Ctx) {
   });
   if (data !== true) throw new Error("Acesso restrito a administradores");
 }
+
+/** Limite de ações administrativas por admin (mitiga abuso/força bruta). */
+async function guardAdminRate(userId: string, bucket: string, limit = 30) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
+    _bucket: `admin:${bucket}`,
+    _identifier: userId,
+    _limit: limit,
+    _window_seconds: 300,
+  });
+  if (!error && data === false) throw new Error("Muitas ações em pouco tempo. Aguarde e tente novamente.");
+}
+
+/** Registro de auditoria para ações administrativas sensíveis. */
+async function audit(input: {
+  actorId: string;
+  actorEmail: string | null;
+  action: string;
+  targetEmail?: string | null;
+  targetUserId?: string | null;
+  details?: Record<string, unknown>;
+}) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  await supabaseAdmin.from("admin_audit_log").insert({
+    actor_id: input.actorId,
+    actor_email: input.actorEmail,
+    action: input.action,
+    target_email: input.targetEmail ?? null,
+    target_user_id: input.targetUserId ?? null,
+    details: (input.details ?? {}) as never,
+  });
+}
+
+/** Verificação server-side de acesso admin (usada para bloquear a rota /app/admin). */
+export const verifyAdminAccess = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    return { isAdmin: data === true };
+  });
+
 
 export type AdminStats = {
   users: number;
@@ -125,6 +169,7 @@ export const grantAdmin = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => EmailInput.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    await guardAdminRate(context.userId, "grant-admin", 15);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const email = data.email.toLowerCase();
 
@@ -149,6 +194,13 @@ export const grantAdmin = createServerFn({ method: "POST" })
         { onConflict: "user_id,role", ignoreDuplicates: true },
       );
     if (error) throw new Error(error.message);
+    await audit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string } | undefined)?.email ?? null,
+      action: "grant_admin",
+      targetEmail: email,
+      targetUserId: target.id,
+    });
     return { ok: true, pending: false, message: "Acesso de administrador concedido." };
   });
 
@@ -167,5 +219,97 @@ export const revokeAdmin = createServerFn({ method: "POST" })
     await supabaseAdmin.from("admin_invites").delete().eq("email", email);
     if (target)
       await supabaseAdmin.from("user_roles").delete().eq("user_id", target.id).eq("role", "admin");
+    await audit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string } | undefined)?.email ?? null,
+      action: "revoke_admin",
+      targetEmail: email,
+      targetUserId: target?.id ?? null,
+    });
     return { ok: true };
+  });
+
+const PlanInput = z.object({
+  email: z.string().trim().email().max(255),
+  plan: z.enum(["free", "pro", "family"]),
+  months: z.number().int().min(1).max(36).default(12),
+});
+
+/** Atribui manualmente um plano (VIP/Pro ou Família) a um usuário, sem checkout. */
+export const setUserPlan = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => PlanInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    await guardAdminRate(context.userId, "set-plan");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email = data.email.toLowerCase();
+
+    const { data: userList } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const target = (userList?.users ?? []).find((u) => (u.email ?? "").toLowerCase() === email);
+    if (!target) throw new Error("Nenhum usuário encontrado com esse e-mail.");
+
+    const periodEnd =
+      data.plan === "free"
+        ? null
+        : new Date(Date.now() + data.months * 30 * 86400000).toISOString();
+
+    const { error } = await supabaseAdmin.from("subscriptions").upsert(
+      {
+        user_id: target.id,
+        plan: data.plan,
+        status: data.plan === "free" ? "canceled" : "active",
+        provider: "manual",
+        external_id: null,
+        current_period_end: periodEnd,
+      },
+      { onConflict: "user_id" },
+    );
+    if (error) throw new Error(error.message);
+
+    await audit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string } | undefined)?.email ?? null,
+      action: "set_plan",
+      targetEmail: email,
+      targetUserId: target.id,
+      details: { plan: data.plan, months: data.months, periodEnd },
+    });
+
+    return {
+      ok: true,
+      message:
+        data.plan === "free"
+          ? "Plano removido — o usuário voltou ao gratuito."
+          : `Plano ${data.plan === "pro" ? "VIP (Pro)" : "Família"} liberado por ${data.months} meses.`,
+    };
+  });
+
+export type AuditEntry = {
+  id: string;
+  actorEmail: string | null;
+  action: string;
+  targetEmail: string | null;
+  details: string;
+  createdAt: string;
+};
+
+/** Histórico de ações administrativas. */
+export const listAuditLog = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AuditEntry[]> => {
+    await assertAdmin(context);
+    const { data } = await context.supabase
+      .from("admin_audit_log")
+      .select("id,actor_email,action,target_email,details,created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    return (data ?? []).map((r) => ({
+      id: r.id,
+      actorEmail: r.actor_email,
+      action: r.action,
+      targetEmail: r.target_email,
+      details: JSON.stringify(r.details ?? {}),
+      createdAt: r.created_at,
+    }));
   });
