@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { BackButton } from "@/components/back-button";
 
 
 const nav = [
@@ -40,6 +41,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle()
       .then(({ data }) => setIsAdmin(!!data));
   }, [user]);
+
+  const showBack = location.pathname !== "/app/dashboard";
 
   const handleSignOut = async () => {
     await signOut();
@@ -83,12 +86,22 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Mobile top */}
       <div className="flex flex-1 flex-col">
         <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur md:hidden">
-          <Link to="/app/dashboard" className="font-display font-bold"><span className="text-primary">KOTIVA</span></Link>
+          <div className="flex items-center gap-2">
+            {showBack && <BackButton />}
+            <Link to="/app/dashboard" className="font-display font-bold"><span className="text-primary">KOTIVA</span></Link>
+          </div>
           <Button variant="ghost" size="icon" onClick={() => setOpen((o) => !o)}>
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          {showBack && (
+            <div className="mb-4 hidden md:block">
+              <BackButton />
+            </div>
+          )}
+          {children}
+        </main>
       </div>
 
       {open && <div className="fixed inset-0 z-30 bg-black/40 md:hidden" onClick={() => setOpen(false)} />}

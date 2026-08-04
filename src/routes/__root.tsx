@@ -15,6 +15,8 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { PWAInstall } from "@/components/pwa-install";
 import { registerPWA } from "@/lib/pwa";
+import { SplashScreen } from "@/components/splash-screen";
+import { OfflineScreen } from "@/components/offline-screen";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -125,6 +127,8 @@ function RootComponent() {
           </div>
           <Toaster position="top-right" richColors />
           <PWAInstall />
+          <SplashScreen />
+          <OfflineScreen />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
