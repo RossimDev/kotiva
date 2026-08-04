@@ -456,6 +456,10 @@ function Shopping() {
         </Card>
       </div>
 
+      {scanned && (
+        <ProductInfoCard product={scanned} onDismiss={() => setScanned(null)} />
+      )}
+
       <Card className="p-4">
         <form
           onSubmit={(e) => {

@@ -335,6 +335,7 @@ function Items() {
             <DialogTitle>{editingId ? "Editar item" : "Adicionar item"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
+            {scanned && <ProductInfoCard product={scanned} onDismiss={() => setScanned(null)} />}
             <div>
               <Label>Nome *</Label>
               <Input
