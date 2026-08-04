@@ -38,6 +38,7 @@ import {
   sectionFor,
   SECTION_LABEL,
   type ProductSection,
+  type BarcodeProduct,
 } from "@/lib/barcode";
 import { SHOPPING_CATEGORIES } from "@/lib/kotiva";
 
