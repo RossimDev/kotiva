@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 
-type Ctx = { supabase: SupabaseClient<Database>; userId: string };
+type Ctx = { supabase: SupabaseClient<Database>; userId: string; claims?: { email?: string } };
 
 async function assertAdmin(context: Ctx) {
   const { data } = await context.supabase.rpc("has_role", {
