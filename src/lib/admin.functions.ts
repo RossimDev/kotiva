@@ -14,6 +14,50 @@ async function assertAdmin(context: Ctx) {
   if (data !== true) throw new Error("Acesso restrito a administradores");
 }
 
+/** Limite de ações administrativas por admin (mitiga abuso/força bruta). */
+async function guardAdminRate(userId: string, bucket: string, limit = 30) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
+    _bucket: `admin:${bucket}`,
+    _identifier: userId,
+    _limit: limit,
+    _window_seconds: 300,
+  });
+  if (!error && data === false) throw new Error("Muitas ações em pouco tempo. Aguarde e tente novamente.");
+}
+
+/** Registro de auditoria para ações administrativas sensíveis. */
+async function audit(input: {
+  actorId: string;
+  actorEmail: string | null;
+  action: string;
+  targetEmail?: string | null;
+  targetUserId?: string | null;
+  details?: Record<string, unknown>;
+}) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  await supabaseAdmin.from("admin_audit_log").insert({
+    actor_id: input.actorId,
+    actor_email: input.actorEmail,
+    action: input.action,
+    target_email: input.targetEmail ?? null,
+    target_user_id: input.targetUserId ?? null,
+    details: (input.details ?? {}) as never,
+  });
+}
+
+/** Verificação server-side de acesso admin (usada para bloquear a rota /app/admin). */
+export const verifyAdminAccess = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    return { isAdmin: data === true };
+  });
+
+
 export type AdminStats = {
   users: number;
   newUsers7d: number;
