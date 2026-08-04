@@ -36,8 +36,10 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { BarcodeScanner } from "@/components/barcode-scanner";
+import { ProductInfoCard } from "@/components/product-info-card";
 import { UNITS } from "@/lib/units";
 import { SHOPPING_CATEGORIES, money } from "@/lib/kotiva";
+import type { BarcodeProduct } from "@/lib/barcode";
 import { lookupProduct, saveProductToBase, sectionFor } from "@/lib/barcode";
 import { ShoppingPresets, usePresets } from "@/components/shopping-presets";
 import {
@@ -85,6 +87,7 @@ function Shopping() {
   const [form, setForm] = useState({ ...emptyForm });
   const [editing, setEditing] = useState<Item | null>(null);
   const [scanning, setScanning] = useState(false);
+  const [scanned, setScanned] = useState<BarcodeProduct | null>(null);
   const [newListOpen, setNewListOpen] = useState(false);
   const [newList, setNewList] = useState({ name: "", budget: "" });
   const [presetsOpen, setPresetsOpen] = useState(false);
@@ -244,12 +247,14 @@ function Shopping() {
   const onDetected = async (code: string) => {
     setScanning(false);
     toast.info("Código lido, buscando produto...");
-    const product = await lookupProduct(code);
+    const product = await lookupProduct(code, undefined, user?.id);
+    setScanned(product);
     if (product.name) {
       setForm((f) => ({
         ...f,
         barcode: code,
         name: product.name,
+        unit_price: product.lastPrice != null ? String(product.lastPrice) : f.unit_price,
         unit: product.unit || f.unit,
         category: (SHOPPING_CATEGORIES as readonly string[]).includes(product.category)
           ? product.category

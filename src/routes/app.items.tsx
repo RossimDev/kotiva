@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { BarcodeScanner } from "@/components/barcode-scanner";
+import { ProductInfoCard } from "@/components/product-info-card";
 import { CategoryManager, useCategories } from "@/components/category-manager";
 import { UNITS, daysUntil, expiryStatus } from "@/lib/units";
 import { PasteItemsDialog } from "@/components/paste-items-dialog";
@@ -78,6 +79,7 @@ function Items() {
   const [open, setOpen] = useState(false);
   const [catsOpen, setCatsOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
+  const [scanned, setScanned] = useState<BarcodeProduct | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
@@ -474,7 +476,8 @@ function Items() {
         onOpenChange={setScanOpen}
         onDetected={async (code) => {
           setForm((f) => ({ ...f, barcode: code }));
-          const product = await lookupProduct(code);
+          const product = await lookupProduct(code, undefined, user?.id);
+          setScanned(product);
           if (product.name) {
             const cat = categories.find(
               (c) => c.name.toLowerCase() === product.category.toLowerCase(),
