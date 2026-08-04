@@ -275,7 +275,7 @@ export type AuditEntry = {
   actorEmail: string | null;
   action: string;
   targetEmail: string | null;
-  details: Record<string, unknown>;
+  details: string;
   createdAt: string;
 };
 
@@ -294,7 +294,7 @@ export const listAuditLog = createServerFn({ method: "POST" })
       actorEmail: r.actor_email,
       action: r.action,
       targetEmail: r.target_email,
-      details: (r.details ?? {}) as Record<string, unknown>,
+      details: JSON.stringify(r.details ?? {}),
       createdAt: r.created_at,
     }));
   });
