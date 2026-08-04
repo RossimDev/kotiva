@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
+import { useServerFn } from "@tanstack/react-start";
+import { guardAuthAttempt } from "@/lib/security.functions";
 import { useEffect } from "react";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup"]).optional() });
@@ -33,6 +35,7 @@ function AuthPage() {
   const [mode, setMode] = useState<"signin" | "signup">(search.mode ?? "signin");
   const [form, setForm] = useState({ email: "", password: "", name: "" });
   const [loading, setLoading] = useState(false);
+  const guard = useServerFn(guardAuthAttempt);
 
   useEffect(() => { if (user) navigate({ to: "/app/dashboard" }); }, [user, navigate]);
 
@@ -40,6 +43,11 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
+      const emailForGuard = z.string().email().safeParse(form.email.trim());
+      if (emailForGuard.success) {
+        const check = await guard({ data: { action: mode, email: emailForGuard.data } });
+        if (!check.allowed) throw new Error(check.message);
+      }
       if (mode === "signup") {
         const parsed = z.object({
           email: z.string().email(),
