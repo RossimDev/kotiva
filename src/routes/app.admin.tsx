@@ -27,8 +27,12 @@ import {
   getAdminStats,
   grantAdmin,
   listAdmins,
+  listAuditLog,
   revokeAdmin,
+  setUserPlan,
+  verifyAdminAccess,
   type AdminStats,
+  type AuditEntry,
 } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/app/admin")({
@@ -51,28 +55,36 @@ function Admin() {
   const [admins, setAdmins] = useState<AdminsData>({ admins: [], invites: [] });
   const [email, setEmail] = useState("");
   const [granting, setGranting] = useState(false);
+  const [audit, setAudit] = useState<AuditEntry[]>([]);
+  const [planEmail, setPlanEmail] = useState("");
+  const [planId, setPlanId] = useState<"pro" | "family" | "free">("pro");
+  const [planMonths, setPlanMonths] = useState(12);
+  const [savingPlan, setSavingPlan] = useState(false);
 
   const fetchStats = useServerFn(getAdminStats);
   const fetchAdmins = useServerFn(listAdmins);
   const doGrant = useServerFn(grantAdmin);
   const doRevoke = useServerFn(revokeAdmin);
+  const doSetPlan = useServerFn(setUserPlan);
+  const fetchAudit = useServerFn(listAuditLog);
+  const checkAdmin = useServerFn(verifyAdminAccess);
 
   const refresh = useCallback(async () => {
-    const [s, a] = await Promise.all([fetchStats({}), fetchAdmins({})]);
+    const [s, a, l] = await Promise.all([fetchStats({}), fetchAdmins({}), fetchAudit({})]);
     setStats(s);
     setAdmins(a);
-  }, [fetchStats, fetchAdmins]);
+    setAudit(l);
+  }, [fetchStats, fetchAdmins, fetchAudit]);
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin")
-      .maybeSingle()
-      .then(async ({ data }) => {
-        if (!data) {
+    let alive = true;
+    (async () => {
+      // Verificação server-side: mesmo com a URL direta, sem role admin não há acesso.
+      try {
+        const { isAdmin } = await checkAdmin({});
+        if (!alive) return;
+        if (!isAdmin) {
           setOk(false);
           navigate({ to: "/app/dashboard" });
           return;
@@ -83,14 +95,20 @@ function Admin() {
           .select("*")
           .order("created_at", { ascending: false })
           .limit(20);
+        if (!alive) return;
         setMsgs((m as Msg[]) ?? []);
-        try {
-          await refresh();
-        } catch (e) {
-          toast.error(e instanceof Error ? e.message : "Falha ao carregar métricas");
-        }
-      });
-  }, [user, navigate, refresh]);
+        await refresh();
+      } catch (e) {
+        if (!alive) return;
+        setOk(false);
+        navigate({ to: "/app/dashboard" });
+        toast.error(e instanceof Error ? e.message : "Acesso negado");
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [user, navigate, refresh, checkAdmin]);
 
   const grant = async () => {
     if (!email.trim()) return;
@@ -114,6 +132,23 @@ function Admin() {
       await refresh();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Não foi possível remover");
+    }
+  };
+
+  const applyPlan = async () => {
+    if (!planEmail.trim()) return;
+    setSavingPlan(true);
+    try {
+      const res = await doSetPlan({
+        data: { email: planEmail.trim(), plan: planId, months: planMonths },
+      });
+      toast.success(res.message);
+      setPlanEmail("");
+      await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível atualizar o plano");
+    } finally {
+      setSavingPlan(false);
     }
   };
 
@@ -232,6 +267,78 @@ function Admin() {
                 </div>
               </div>
             ))}
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="font-display text-lg font-bold">Atribuir plano manualmente</h2>
+        <p className="text-sm text-muted-foreground">
+          Libere o plano VIP (Pro) ou Família para qualquer usuário sem passar pelo checkout.
+        </p>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <div className="min-w-56 flex-1">
+            <Label className="text-xs">E-mail do usuário</Label>
+            <Input
+              type="email"
+              value={planEmail}
+              onChange={(e) => setPlanEmail(e.target.value)}
+              placeholder="pessoa@email.com"
+            />
+          </div>
+          <div>
+            <Label className="text-xs">Plano</Label>
+            <select
+              value={planId}
+              onChange={(e) => setPlanId(e.target.value as "pro" | "family" | "free")}
+              className="h-10 w-40 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="pro">VIP (Pro)</option>
+              <option value="family">Família</option>
+              <option value="free">Remover (Grátis)</option>
+            </select>
+          </div>
+          <div>
+            <Label className="text-xs">Meses</Label>
+            <Input
+              type="number"
+              min={1}
+              max={36}
+              value={planMonths}
+              onChange={(e) => setPlanMonths(Math.min(36, Math.max(1, Number(e.target.value) || 1)))}
+              className="w-24"
+              disabled={planId === "free"}
+            />
+          </div>
+          <Button onClick={applyPlan} disabled={savingPlan}>
+            <Crown className="mr-2 h-4 w-4" /> {savingPlan ? "Aplicando..." : "Aplicar plano"}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="font-display text-lg font-bold">Log de auditoria</h2>
+        <p className="text-sm text-muted-foreground">Ações administrativas sensíveis registradas.</p>
+        <div className="mt-4 space-y-2">
+          {audit.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nenhuma ação registrada ainda.</p>
+          ) : (
+            audit.map((a) => (
+              <div
+                key={a.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 text-sm"
+              >
+                <span>
+                  <Badge variant="outline" className="mr-2">
+                    {a.action}
+                  </Badge>
+                  {a.actorEmail ?? "—"} → {a.targetEmail ?? "—"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {new Date(a.createdAt).toLocaleString("pt-BR")} · {a.details}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </Card>
 
