@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { BackButton } from "@/components/back-button";
+import { PageTransition } from "@/components/page-transition";
 
 
 const nav = [
@@ -100,7 +101,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <BackButton />
             </div>
           )}
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
       </div>
 
