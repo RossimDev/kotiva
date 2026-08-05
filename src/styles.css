@@ -187,6 +187,11 @@
 @utility animate-scale-in { animation: kotiva-scale-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @utility animate-slide-in { animation: kotiva-slide-right 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @utility animate-glow-pulse { animation: kotiva-glow-pulse 3s ease-in-out infinite; }
+@keyframes kotiva-page-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@utility animate-page-in { animation: kotiva-page-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; will-change: opacity, transform; }
 @utility hover-scale { transition: transform 0.2s ease; &:hover { transform: scale(1.04); } }
 @utility hover-lift {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
