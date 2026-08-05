@@ -61,9 +61,13 @@ export function sectionFor(category: string | null | undefined): ProductSection 
 /** Busca o código na base compartilhada e, se não achar, tenta a base pública da web. */
 export async function lookupProduct(
   code: string,
-  webLookup?: (args: {
-    data: { barcode: string };
-  }) => Promise<{ found: boolean; name: string | null; category: string | null }>,
+  webLookup?: (args: { data: { barcode: string } }) => Promise<{
+    found: boolean;
+    name: string | null;
+    brand?: string | null;
+    category: string | null;
+    section?: string | null;
+  }>,
   userId?: string,
 ): Promise<BarcodeProduct> {
   const clean = code.trim();
@@ -92,13 +96,14 @@ export async function lookupProduct(
     const res = await fn({ data: { barcode: clean } });
     if (res.found && res.name) {
       const price = await lastPriceFor(res.name, userId);
+      const category = res.category ?? "Outros";
       return {
         ...price,
         code: clean,
         name: res.name,
-        brand: null,
-        category: "Outros",
-        section: "despensa",
+        brand: res.brand ?? null,
+        category,
+        section: (res.section as ProductSection) ?? sectionFor(category),
         unit: "un",
         source: "web",
       };
