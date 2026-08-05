@@ -17,6 +17,7 @@ import { PWAInstall } from "@/components/pwa-install";
 import { registerPWA } from "@/lib/pwa";
 import { SplashScreen } from "@/components/splash-screen";
 import { OfflineScreen } from "@/components/offline-screen";
+import { PageTransition } from "@/components/page-transition";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -122,7 +123,7 @@ function RootComponent() {
         <AuthProvider>
           <div className="flex min-h-screen flex-col">
             <Navbar />
-            <div className="flex-1"><Outlet /></div>
+            <div className="flex-1"><PageTransition><Outlet /></PageTransition></div>
             <Footer />
           </div>
           <Toaster position="top-right" richColors />
