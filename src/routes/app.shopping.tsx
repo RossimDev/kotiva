@@ -424,7 +424,10 @@ function Shopping() {
             {listItems.filter((i) => !i.checked).length} pendentes nesta lista
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setPasteOpen(true)}>
+            <ClipboardPaste className="mr-2 h-4 w-4" /> Colar lista
+          </Button>
           <Button variant="outline" onClick={() => setPresetsOpen(true)}>
             <Layers className="mr-2 h-4 w-4" /> Presets
           </Button>
