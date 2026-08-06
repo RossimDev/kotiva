@@ -17,7 +17,6 @@ export const CODE_TTL_MINUTES = 10;
 const PURPOSE_LABEL: Record<string, string> = {
   signup: "confirmar seu cadastro no Kotiva",
   password_reset: "redefinir sua senha do Kotiva",
-  phone: "confirmar seu celular no Kotiva",
 };
 
 /** Envia o código por e-mail (Resend). */
@@ -49,34 +48,5 @@ export async function sendEmailCode(to: string, code: string, purpose: string) {
     const body = await res.text();
     console.error(`[verification] Resend falhou [${res.status}]: ${body}`);
     throw new Error("Não foi possível enviar o e-mail agora. Tente novamente em instantes.");
-  }
-}
-
-/** Envia o código por SMS (Twilio). */
-export async function sendSmsCode(to: string, code: string, purpose: string) {
-  const sid = process.env["TWILIO_ACCOUNT_SID"];
-  const token = process.env["TWILIO_AUTH_TOKEN"];
-  const from = process.env["TWILIO_FROM_NUMBER"];
-  if (!sid || !token || !from) {
-    throw new Error(
-      "O envio de SMS ainda não está configurado. Peça ao administrador para cadastrar TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN e TWILIO_FROM_NUMBER.",
-    );
-  }
-  const res = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${sid}:${token}`).toString("base64")}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      To: to,
-      From: from,
-      Body: `Kotiva: ${code} é o seu código para ${PURPOSE_LABEL[purpose] ?? "continuar"}. Expira em ${CODE_TTL_MINUTES} minutos.`,
-    }),
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    console.error(`[verification] Twilio falhou [${res.status}]: ${body}`);
-    throw new Error("Não foi possível enviar o SMS agora. Confira o número e tente novamente.");
   }
 }
