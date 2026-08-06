@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Mail, MessageSquare, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import kotivaMark from "@/assets/kotiva-mark.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useServerFn } from "@tanstack/react-start";
 import { guardAuthAttempt } from "@/lib/security.functions";
 import { requestVerificationCode, confirmVerificationCode } from "@/lib/verification.functions";
-import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup"]).optional() });
 
