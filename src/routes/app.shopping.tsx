@@ -796,6 +796,15 @@ function Shopping() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PasteItemsDialog
+        open={pasteOpen}
+        onOpenChange={setPasteOpen}
+        title="Colar lista de compras"
+        saving={pasteSaving}
+        onConfirm={addPasted}
+      />
     </div>
+
   );
 }
