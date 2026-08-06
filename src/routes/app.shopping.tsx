@@ -294,6 +294,32 @@ function Shopping() {
     loadItems();
   };
 
+  const addPasted = async (parsed: ParsedItem[]) => {
+    if (!user || parsed.length === 0) return;
+    setPasteSaving(true);
+    const { error } = await supabase.from("shopping_items").insert(
+      parsed.map((i) => ({
+        user_id: user.id,
+        list_id: activeList,
+        name: i.name,
+        quantity: i.quantity,
+        unit: i.unit,
+        category: "Outros",
+        unit_price: 0,
+      })),
+    );
+    setPasteSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`${parsed.length} item(ns) adicionados`);
+    setPasteOpen(false);
+    loadItems();
+  };
+
+
+
   const openSuggestions = async () => {
     setSugOpen(true);
     setSuggestions(null);
