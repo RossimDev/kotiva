@@ -145,14 +145,13 @@ export const confirmVerificationCode = createServerFn({ method: "POST" })
       .update({ consumed_at: new Date().toISOString() })
       .eq("id", row.id);
 
-    const meta = (row.meta ?? {}) as { user_id?: string | null; phone?: string | null };
+    const meta = (row.meta ?? {}) as { user_id?: string | null };
     const userId = meta.user_id;
     if (!userId) throw new Error("Conta não encontrada para este código.");
 
     if (data.purpose === "signup") {
       const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
         email_confirm: true,
-        user_metadata: { verified_channel: row.channel, phone_number: meta.phone ?? null },
       });
       if (error) throw new Error(error.message);
       return { verified: true as const };
