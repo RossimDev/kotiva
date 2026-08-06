@@ -33,7 +33,6 @@ export const Route = createFileRoute("/auth")({
 const SPAM_NOTICE = "Se a mensagem não chegar, verifique sua caixa de spam.";
 
 type Step = "signin" | "signup" | "verify" | "forgot" | "reset";
-type Channel = "email" | "sms";
 
 function CodeInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
@@ -55,8 +54,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [step, setStep] = useState<Step>(search.mode ?? "signin");
-  const [channel, setChannel] = useState<Channel>("email");
-  const [form, setForm] = useState({ email: "", password: "", name: "", phone: "" });
+  const [form, setForm] = useState({ email: "", password: "", name: "" });
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -82,15 +80,13 @@ function AuthPage() {
     await requestCode({
       data: {
         purpose,
-        channel,
         email: form.email.trim(),
-        phone: channel === "sms" ? form.phone.trim() : undefined,
         name: purpose === "signup" ? form.name.trim() : undefined,
         password: purpose === "signup" ? form.password : undefined,
       },
     });
     setCooldown(45);
-    toast.success(channel === "sms" ? "Código enviado por SMS." : "Código enviado por e-mail.");
+    toast.success("Código enviado por e-mail.");
   };
 
   const submitSignIn = async (e: React.FormEvent) => {
@@ -118,9 +114,6 @@ function AuthPage() {
         name: z.string().min(1, "Informe seu nome").max(80),
       }).safeParse({ email: form.email.trim(), password: form.password, name: form.name.trim() });
       if (!parsed.success) throw new Error(parsed.error.issues[0].message);
-      if (channel === "sms" && !/^\+?[1-9]\d{7,14}$/.test(form.phone.trim())) {
-        throw new Error("Informe o celular com DDI e DDD (ex: +5511999999999)");
-      }
       const check = await guard({ data: { action: "signup", email: parsed.data.email } });
       if (!check.allowed) throw new Error(check.message);
       await sendCode("signup");
@@ -162,32 +155,6 @@ function AuthPage() {
     } catch (e) { err(e); } finally { setLoading(false); }
   };
 
-  const channelPicker = (
-    <div className="space-y-2">
-      <Label>Como quer receber o código de verificação?</Label>
-      <div className="grid grid-cols-2 gap-2">
-        {([["email", Mail, "E-mail"], ["sms", MessageSquare, "SMS"]] as const).map(([value, Icon, label]) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setChannel(value)}
-            className={cn(
-              "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-              channel === value ? "border-primary bg-primary/10 text-primary" : "border-input text-muted-foreground hover:bg-muted",
-            )}
-          >
-            <Icon className="h-4 w-4" /> {label}
-          </button>
-        ))}
-      </div>
-      {channel === "sms" && (
-        <div>
-          <Label htmlFor="phone">Celular (com DDI)</Label>
-          <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+5511999999999" autoComplete="tel" />
-        </div>
-      )}
-    </div>
-  );
 
   const title = { signin: "Entrar", signup: "Criar conta", verify: "Verificação", forgot: "Recuperar senha", reset: "Nova senha" }[step];
 
@@ -220,7 +187,7 @@ function AuthPage() {
                 <div><Label htmlFor="name">Nome</Label><Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required maxLength={80} /></div>
                 <div><Label htmlFor="email">E-mail</Label><Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required autoComplete="email" /></div>
                 <div><Label htmlFor="password">Senha</Label><PasswordInput id="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} autoComplete="new-password" /></div>
-                {channelPicker}
+                <p className="text-xs text-muted-foreground">Enviaremos um código de 5 dígitos para o seu e-mail.</p>
                 <Button type="submit" className="w-full shadow-glow" disabled={loading}>{loading ? "Enviando código..." : "Criar conta"}</Button>
               </form>
             </>
@@ -230,7 +197,7 @@ function AuthPage() {
             <form onSubmit={submitVerify} className="mt-6 space-y-4">
               <div className="flex items-start gap-3 rounded-lg bg-primary/10 p-3 text-sm">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span>Enviamos um código de 5 dígitos {channel === "sms" ? `para ${form.phone}` : `para ${form.email}`}. Ele expira em 10 minutos.</span>
+                <span>Enviamos um código de 5 dígitos para {form.email}. Ele expira em 10 minutos.</span>
               </div>
               <CodeInput value={code} onChange={setCode} />
               <Button type="submit" className="w-full shadow-glow" disabled={loading || code.length !== 5}>{loading ? "Verificando..." : "Confirmar código"}</Button>
@@ -245,7 +212,6 @@ function AuthPage() {
             <form onSubmit={submitForgot} className="mt-6 space-y-4">
               <p className="text-sm text-muted-foreground">Enviaremos um código de 5 dígitos para você criar uma nova senha.</p>
               <div><Label htmlFor="email">E-mail da conta</Label><Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required autoComplete="email" /></div>
-              {channelPicker}
               <Button type="submit" className="w-full shadow-glow" disabled={loading}>{loading ? "Enviando..." : "Enviar código"}</Button>
               <Button type="button" variant="ghost" className="w-full" onClick={() => setStep("signin")}>Voltar ao login</Button>
               <p className="text-center text-xs text-muted-foreground">{SPAM_NOTICE}</p>
