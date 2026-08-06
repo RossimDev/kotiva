@@ -7,19 +7,11 @@ import { z } from "zod";
  * com hash — o cliente nunca recebe o valor nem consegue ler a tabela.
  */
 
-const ChannelSchema = z.enum(["email", "sms"]);
 const PurposeSchema = z.enum(["signup", "password_reset"]);
-
-const phoneSchema = z
-  .string()
-  .trim()
-  .regex(/^\+?[1-9]\d{7,14}$/, "Informe o celular com DDD e código do país (ex: +5511999999999)");
 
 const RequestInput = z.object({
   purpose: PurposeSchema,
-  channel: ChannelSchema,
   email: z.string().trim().email().max(255),
-  phone: phoneSchema.optional(),
   name: z.string().trim().min(1).max(80).optional(),
   password: z.string().min(6).max(72).optional(),
 });
@@ -51,20 +43,16 @@ export const requestVerificationCode = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => RequestInput.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { generateCode, hashCode, sendEmailCode, sendSmsCode, CODE_TTL_MINUTES } = await import(
+    const { generateCode, hashCode, sendEmailCode, CODE_TTL_MINUTES } = await import(
       "./verification.server"
     );
-
-    if (data.channel === "sms" && !data.phone) {
-      throw new Error("Informe o número de celular para receber o código por SMS.");
-    }
 
     const email = data.email.toLowerCase();
 
     // Limite de envios por destino (anti-abuso)
     const { data: allowed } = await supabaseAdmin.rpc("check_rate_limit", {
       _bucket: `verify_${data.purpose}`,
-      _identifier: `dest:${data.channel === "sms" ? data.phone : email}`,
+      _identifier: `dest:${email}`,
       _limit: 5,
       _window_seconds: 900,
     });
@@ -84,7 +72,7 @@ export const requestVerificationCode = createServerFn({ method: "POST" })
           email,
           password: data.password,
           email_confirm: false,
-          user_metadata: { display_name: data.name, pending_phone: data.phone ?? null },
+          user_metadata: { display_name: data.name },
         });
         if (error) throw new Error(error.message);
         existing = created.user;
@@ -93,11 +81,11 @@ export const requestVerificationCode = createServerFn({ method: "POST" })
       }
     } else if (!existing) {
       // Não revelamos se o e-mail existe
-      return { sent: true, channel: data.channel, ttlMinutes: 10 };
+      return { sent: true, channel: "email" as const, ttlMinutes: CODE_TTL_MINUTES };
     }
 
     const code = generateCode();
-    const destination = data.channel === "sms" ? data.phone! : email;
+    const destination = email;
 
     await supabaseAdmin
       .from("verification_codes")
@@ -107,19 +95,18 @@ export const requestVerificationCode = createServerFn({ method: "POST" })
       .is("consumed_at", null);
 
     const { error: insertError } = await supabaseAdmin.from("verification_codes").insert({
-      channel: data.channel,
+      channel: "email",
       destination,
       purpose: data.purpose,
       code_hash: hashCode(code, destination),
       expires_at: new Date(Date.now() + CODE_TTL_MINUTES * 60_000).toISOString(),
-      meta: { email, user_id: existing?.id ?? null, phone: data.phone ?? null },
+      meta: { email, user_id: existing?.id ?? null },
     });
     if (insertError) throw new Error("Não foi possível gerar o código. Tente novamente.");
 
-    if (data.channel === "sms") await sendSmsCode(destination, code, data.purpose);
-    else await sendEmailCode(destination, code, data.purpose);
+    await sendEmailCode(destination, code, data.purpose);
 
-    return { sent: true, channel: data.channel, ttlMinutes: CODE_TTL_MINUTES };
+    return { sent: true, channel: "email" as const, ttlMinutes: CODE_TTL_MINUTES };
   });
 
 export const confirmVerificationCode = createServerFn({ method: "POST" })
