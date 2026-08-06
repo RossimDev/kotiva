@@ -11,6 +11,7 @@ import {
   Pencil,
   Layers,
   Lightbulb,
+  ClipboardPaste,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,8 @@ import {
   type PresetItem,
   type Suggestion,
 } from "@/lib/shopping-presets";
-import { normalizeName } from "@/lib/parse-items";
+import { normalizeName, type ParsedItem } from "@/lib/parse-items";
+import { PasteItemsDialog } from "@/components/paste-items-dialog";
 
 type List = { id: string; name: string; color: string | null; budget: number | null };
 type Item = {
@@ -94,6 +96,8 @@ function Shopping() {
   const [sugOpen, setSugOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[] | null>(null);
   const [picked, setPicked] = useState<Record<string, boolean>>({});
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [pasteSaving, setPasteSaving] = useState(false);
   const { presets, reload: reloadPresets } = usePresets();
 
   const loadLists = useCallback(async () => {
@@ -290,6 +294,32 @@ function Shopping() {
     loadItems();
   };
 
+  const addPasted = async (parsed: ParsedItem[]) => {
+    if (!user || parsed.length === 0) return;
+    setPasteSaving(true);
+    const { error } = await supabase.from("shopping_items").insert(
+      parsed.map((i) => ({
+        user_id: user.id,
+        list_id: activeList,
+        name: i.name,
+        quantity: i.quantity,
+        unit: i.unit,
+        category: "Outros",
+        unit_price: 0,
+      })),
+    );
+    setPasteSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`${parsed.length} item(ns) adicionados`);
+    setPasteOpen(false);
+    loadItems();
+  };
+
+
+
   const openSuggestions = async () => {
     setSugOpen(true);
     setSuggestions(null);
@@ -394,7 +424,10 @@ function Shopping() {
             {listItems.filter((i) => !i.checked).length} pendentes nesta lista
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setPasteOpen(true)}>
+            <ClipboardPaste className="mr-2 h-4 w-4" /> Colar lista
+          </Button>
           <Button variant="outline" onClick={() => setPresetsOpen(true)}>
             <Layers className="mr-2 h-4 w-4" /> Presets
           </Button>
@@ -763,6 +796,15 @@ function Shopping() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PasteItemsDialog
+        open={pasteOpen}
+        onOpenChange={setPasteOpen}
+        title="Colar lista de compras"
+        saving={pasteSaving}
+        onConfirm={addPasted}
+      />
     </div>
+
   );
 }
