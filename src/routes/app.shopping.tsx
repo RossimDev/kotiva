@@ -11,6 +11,7 @@ import {
   Pencil,
   Layers,
   Lightbulb,
+  ClipboardPaste,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,8 @@ import {
   type PresetItem,
   type Suggestion,
 } from "@/lib/shopping-presets";
-import { normalizeName } from "@/lib/parse-items";
+import { normalizeName, type ParsedItem } from "@/lib/parse-items";
+import { PasteItemsDialog } from "@/components/paste-items-dialog";
 
 type List = { id: string; name: string; color: string | null; budget: number | null };
 type Item = {
@@ -94,6 +96,8 @@ function Shopping() {
   const [sugOpen, setSugOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[] | null>(null);
   const [picked, setPicked] = useState<Record<string, boolean>>({});
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [pasteSaving, setPasteSaving] = useState(false);
   const { presets, reload: reloadPresets } = usePresets();
 
   const loadLists = useCallback(async () => {
