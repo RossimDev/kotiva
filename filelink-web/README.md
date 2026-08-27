@@ -82,6 +82,36 @@ impede o furo de NAT.
 - Timeout de join: 30s (TURN demora mais que STUN).
 - Erros por tipo: `peer-unavailable`, `network`, `server-error`.
 - CDN reserva do PeerJS via jsDelivr se o unpkg falhar.
+- O botão **Conectar** **nunca mais trava:**
+  - Antes, o `setTimeout` que o reabilitava ficava **dentro** de `peer.on('open')` —
+    se o serviço de sinalização não respondesse, o botão ficava desabilitado para sempre.
+  - Agora há **dois** timeouts: um para o broker de sinalização (mesma mensagem clara
+    se a internet cair) e outro para o TURN/ICE fechar a rota. Qualquer erro reabilita
+    o botão e mostra a mensagem.
+  - Se o **PeerJS não carregar** (CDN fora), o clique avisa “Não consegui iniciar o
+    PeerJS — verifique a conexão e recarregue a página” em vez de travar o botão.
+  - Clique duplo é ignorado (`disabled`), evitando tentativas simultâneas.
+
+### 6. Retry (tentar de novo)
+
+Arquivos que **falharam** (status *Erro*) ou foram **cancelados** (status
+*Cancelado*) agora têm o botão **Tentar novamente**, além do **Excluir**.
+
+- Ao clicar em **Tentar novamente**, o item volta para a **Fila** e é reenviado
+  automaticamente. O lado receptor descarta qualquer parcial antigo do mesmo
+  arquivo antes de recomeçar (sem duplicar itens na lista de Recebidos).
+- Se a conexão estiver fechada, o botão avisa *“Reconecte os aparelhos para
+  tentar de novo”* em vez de falhar silenciosamente.
+- O envio agora tenta de novo sozinho em **erros transitórios** (buffer cheio)
+  com retry/backoff: até 3 tentativas extras com espera crescente (250 → 600 →
+  1200 ms). Só marca erro de verdade quando todas falham.
+- Quando um envio falha, o outro lado é avisado (`cancel`) para descartar o
+  parcial logo de cara — nada de lixo acumulado na lista de Recebidos.
+- Se o canal cair no meio de um envio/recepção, o que estava em trânsito vira
+  *Erro* e pode ser **Tentar novamente** depois de reconectar.
+- Na tela do **host**, o botão **Novo código** regenera o código na hora — útil
+  quando a negociação TURN/ICE travou e você quer tentar de novo sem voltar ao
+  início.
 
 ## Limitação conhecida
 
