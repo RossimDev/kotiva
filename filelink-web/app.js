@@ -22,6 +22,47 @@
   const BUFFER_LOW = 1 * 1024 * 1024; // volta a enviar abaixo disso
   const ID_PREFIX = 'filelink-web-';
   const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sem I,O,0,1
+  const JOIN_TIMEOUT_MS = 30000;
+
+  const PEER_CONFIG = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun.cloudflare.com:3478' },
+      { urls: 'stun:global.stun.twilio.com:3478' },
+      {
+        urls: 'turn:openrelay.metered.ca:80',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+        username: 'openrelayproject',
+        credential: 'openrelayproject',
+      },
+    ],
+  };
+
+  function peerErrorMessage(err) {
+    const type = (err && err.type) || '';
+    if (type === 'peer-unavailable') {
+      return 'Código não encontrado (peer-unavailable). Confira no computador.';
+    }
+    if (type === 'network') {
+      return 'Falha de rede (network). Verifique a conexão e tente de novo.';
+    }
+    if (type === 'server-error') {
+      return 'O servidor de sinalização falhou (server-error). Tente novamente.';
+    }
+    if (type === 'unavailable-id') {
+      return 'Este código já está em uso. Gerando outro...';
+    }
+    return `Erro: ${type || (err && err.message) || err}`;
+  }
 
   // ------------------------------------------------------------------ state
   const state = {
@@ -428,15 +469,71 @@
   // =======================================================================
 
   function newPeer(id) {
-    return new Peer(id, { debug: 1 });
+    const peer = new Peer(id, { debug: 1, config: PEER_CONFIG });
+    peer.on('disconnected', () => {
+      if (peer.destroyed || !peer.disconnected) return;
+      try {
+        peer.reconnect();
+      } catch (e) {
+        console.warn('peer.reconnect falhou', e);
+      }
+    });
+    return peer;
+  }
+
+  function setIceUi(text, kind) {
+    const host = $('host-status');
+    const join = $('join-status');
+    const connEl = $('conn-status');
+    const ice = $('ice-status');
+    if (ice) {
+      ice.textContent = text;
+      ice.className = 'status' + (kind ? ' ' + kind : '');
+    }
+    const apply = (el) => {
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'status' + (kind ? ' ' + kind : '');
+    };
+    if (!state.connected) {
+      apply(host);
+      apply(join);
+    }
+    if (connEl && state.connected) {
+      /* keep connected label; ice-status shows path */
+    }
+  }
+
+  function watchIce(conn) {
+    const pc = conn.peerConnection;
+    if (!pc) return;
+    const apply = () => {
+      const st = pc.iceConnectionState;
+      if (st === 'checking' || st === 'new') {
+        setIceUi('Negociando rota de rede...', '');
+      } else if (st === 'connected' || st === 'completed') {
+        setIceUi('Rota de rede estabelecida.', 'ok');
+      } else if (st === 'disconnected') {
+        setIceUi('Conexão ICE instável...', '');
+      } else if (st === 'failed') {
+        setIceUi('Falha de NAT/ICE. TURN pode não ter sido alcançado.', 'err');
+      } else if (st === 'closed') {
+        setIceUi('Conexão ICE encerrada.', 'err');
+      } else {
+        setIceUi('ICE: ' + st, '');
+      }
+    };
+    pc.oniceconnectionstatechange = apply;
+    apply();
   }
 
   function wireConnection(conn) {
     state.conn = conn;
+    watchIce(conn);
     conn.on('open', () => {
       state.connected = true;
       attachChannel(conn.dataChannel);
-      $('conn-status').textContent = '✅ Conectado';
+      $('conn-status').textContent = 'Conectado';
       $('conn-status').className = 'status ok';
       showScreen('screen-transfer');
       toast('Conectado!', 'ok');
@@ -444,7 +541,7 @@
     });
     conn.on('close', () => {
       state.connected = false;
-      $('conn-status').textContent = '⚠️ Conexão encerrada';
+      $('conn-status').textContent = 'Conexão encerrada';
       $('conn-status').className = 'status err';
       // marca o que estava em trânsito
       state.outgoing.forEach((i) => {
@@ -476,7 +573,7 @@
         startHost();
         return;
       }
-      $('host-status').textContent = `Erro: ${err.type || err.message}`;
+      $('host-status').textContent = peerErrorMessage(err);
       $('host-status').className = 'status err';
     });
 
@@ -522,20 +619,16 @@
         $('btn-connect').disabled = false;
         if (!state.connected) {
           $('join-status').textContent =
-            'Não achei esse código. Confira e tente de novo.';
+            'Tempo esgotado (30s). TURN em 4G/5G pode demorar — tente de novo.';
           $('join-status').className = 'status err';
         }
-      }, 9000);
+      }, JOIN_TIMEOUT_MS);
     });
 
     peer.on('error', (err) => {
       console.error(err);
       $('btn-connect').disabled = false;
-      const msg =
-        err.type === 'peer-unavailable'
-          ? 'Código não encontrado. Confira no computador.'
-          : `Erro: ${err.type || err.message}`;
-      $('join-status').textContent = msg;
+      $('join-status').textContent = peerErrorMessage(err);
       $('join-status').className = 'status err';
     });
   }

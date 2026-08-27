@@ -1,4 +1,4 @@
-# 🔗 FileLink Web
+# FileLink Web
 
 Transferência de arquivos **direto de um aparelho para o outro** (P2P via WebRTC),
 rodando 100% no navegador. Nenhum arquivo passa por servidor: só o *handshake*
@@ -69,6 +69,19 @@ Ou, no painel da Vercel: **Root Directory** = `filelink-web`, Framework Preset =
 2. No celular: **Conectar (celular)** → digite o código → **Conectar**.
 3. Envie arquivos pelo botão ou arrastando para a área tracejada. Funciona nos
    dois sentidos ao mesmo tempo.
+
+### 5. PC ↔ celular no 4G/5G (CGNAT)
+
+O Peer passa a ser criado com `PEER_CONFIG.iceServers`: STUN do Google/Twilio
+e TURN público `openrelay.metered.ca` (portas 80, 443 e `443?transport=tcp`,
+usuário/senha `openrelayproject`). Sem TURN, NAT simétrico das operadoras
+impede o furo de NAT.
+
+- `peer.on('disconnected')` chama `peer.reconnect()` se ainda estiver desconectado.
+- Estado ICE (`oniceconnectionstatechange`) aparece na tela (“Negociando rota de rede…”).
+- Timeout de join: 30s (TURN demora mais que STUN).
+- Erros por tipo: `peer-unavailable`, `network`, `server-error`.
+- CDN reserva do PeerJS via jsDelivr se o unpkg falhar.
 
 ## Limitação conhecida
 
