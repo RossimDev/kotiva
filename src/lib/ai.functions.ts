@@ -81,94 +81,22 @@ Responda SOMENTE com JSON válido:
 
 const LookupInput = z.object({ barcode: z.string().min(6).max(32) });
 
-/** Mapeia as categorias do Open Food Facts para as categorias/seções do Kotiva. */
-function mapCategory(raw: string | null): { category: string; section: string } {
-  const t = (raw ?? "").toLowerCase();
-  const rules: Array<[RegExp, string, string]> = [
-    [/limpe|clean|deterg|sabão|desinfet/, "Limpeza", "limpeza"],
-    [/higien|shampoo|sabonete|dental|papel/, "Higiene", "limpeza"],
-    [/congel|frozen|sorvet/, "Congelados", "congelador"],
-    [/carne|meat|frango|peixe|fish|poultry/, "Carnes", "geladeira"],
-    [/leite|queijo|iogurt|dairy|cheese|milk|manteig/, "Laticínios", "geladeira"],
-    [/bebid|drink|refrig|suco|juice|água|water|cerveja|beverag/, "Bebidas", "geladeira"],
-    [/fruta|fruit|verdur|legum|vegetab|salad/, "Hortifruti", "geladeira"],
-    [/pão|pães|bread|padar|bakery|bolo/, "Padaria", "despensa"],
-    [/doce|chocolat|candy|snack|biscoit|sweet/, "Doces", "despensa"],
-    [/pet|dog|cat|ração/, "Pet", "despensa"],
-  ];
-  for (const [re, category, section] of rules) if (re.test(t)) return { category, section };
-  return { category: "Mercearia", section: "despensa" };
-}
-
-/**
- * Consulta o Open Food Facts pelo código de barras e alimenta a base
- * compartilhada do Kotiva para que a próxima leitura seja instantânea.
- */
 export const lookupBarcode = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => LookupInput.parse(input))
   .handler(async ({ data }) => {
-    const code = data.barcode.trim();
-    const endpoints = [
-      `https://br.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json`,
-      `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json`,
-    ];
-
-    for (const url of endpoints) {
-      try {
-        const res = await fetch(url, { headers: { "User-Agent": "Kotiva/1.0 (kotiva.app)" } });
-        if (!res.ok) continue;
-        const json = (await res.json()) as {
-          status?: number;
-          product?: {
-            product_name?: string;
-            product_name_pt?: string;
-            brands?: string;
-            quantity?: string;
-            categories?: string;
-            categories_tags?: string[];
-          };
-        };
-        const p = json.product;
-        const name = p?.product_name_pt || p?.product_name;
-        if (json.status !== 1 || !name) continue;
-
-        const rawCategory = p?.categories?.split(",")[0]?.trim() ?? p?.categories_tags?.[0] ?? null;
-        const { category, section } = mapCategory(`${rawCategory ?? ""} ${p?.categories ?? ""}`);
-        const brand = p?.brands?.split(",")[0]?.trim() || null;
-
-        // Alimenta a base compartilhada (sem sobrescrever produtos verificados)
-        try {
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { data: existing } = await supabaseAdmin
-            .from("product_barcodes")
-            .select("id")
-            .eq("code", code)
-            .maybeSingle();
-          if (!existing) {
-            await supabaseAdmin.from("product_barcodes").insert({
-              code,
-              name: name.slice(0, 160),
-              brand,
-              category,
-              section,
-              default_unit: "un",
-              verified: false,
-            });
-          }
-          await supabaseAdmin
-            .from("product_catalog")
-            .upsert(
-              { barcode: code, name: name.slice(0, 160), brand, category, package: p?.quantity ?? null },
-              { onConflict: "barcode" },
-            );
-        } catch (e) {
-          console.error("[lookupBarcode] falha ao salvar na base:", e);
+    try {
+      const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(data.barcode)}.json`, {
+        headers: { "User-Agent": "Kotiva/1.0" },
+      });
+      if (res.ok) {
+        const json = (await res.json()) as { status?: number; product?: { product_name?: string; product_name_pt?: string; quantity?: string; categories?: string } };
+        const name = json.product?.product_name_pt || json.product?.product_name;
+        if (json.status === 1 && name) {
+          return { found: true, name, quantity: json.product?.quantity ?? null, category: json.product?.categories?.split(",")[0]?.trim() ?? null };
         }
-
-        return { found: true, name, brand, quantity: p?.quantity ?? null, category, section };
-      } catch {
-        /* tenta o próximo endpoint */
       }
+    } catch {
+      /* segue para fallback */
     }
-    return { found: false, name: null, brand: null, quantity: null, category: null, section: null };
+    return { found: false, name: null, quantity: null, category: null };
   });

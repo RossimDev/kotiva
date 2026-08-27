@@ -14,10 +14,6 @@ import { Footer } from "@/components/layout/footer";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { PWAInstall } from "@/components/pwa-install";
-import { registerPWA } from "@/lib/pwa";
-import { SplashScreen } from "@/components/splash-screen";
-import { OfflineScreen } from "@/components/offline-screen";
-import { PageTransition } from "@/components/page-transition";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -75,24 +71,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#0d0b18" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "Kotiva" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { title: "Kotiva — Organize. Planeje. Viva melhor." },
-      { name: "description", content: "Plataforma inteligente para o gerenciamento completo da casa: geladeira, compras, contas, cozinha, limpeza e pets com IA." },
-      { property: "og:title", content: "Kotiva — Organize. Planeje. Viva melhor." },
-      { property: "og:description", content: "Gerencie sua casa inteira com IA: validades, compras, finanças, receitas, limpeza e pets." },
+      { name: "theme-color", content: "#f97316" },
+      { title: "Kotiva — Gerencie sua geladeira com IA" },
+      { name: "description", content: "Cadastre alimentos, acompanhe validades, receba receitas personalizadas por IA e reduza o desperdício com o Kotiva." },
+      { property: "og:title", content: "Kotiva" },
+      { property: "og:description", content: "Sua geladeira mais inteligente: validades, receitas com IA e listas de compras automáticas." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
-
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-      { rel: "icon", href: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "apple-touch-icon", href: "/icon-512.png" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -116,20 +106,17 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  useEffect(() => { registerPWA(); }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
           <div className="flex min-h-screen flex-col">
             <Navbar />
-            <div className="flex-1"><PageTransition><Outlet /></PageTransition></div>
+            <div className="flex-1"><Outlet /></div>
             <Footer />
           </div>
           <Toaster position="top-right" richColors />
           <PWAInstall />
-          <SplashScreen />
-          <OfflineScreen />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

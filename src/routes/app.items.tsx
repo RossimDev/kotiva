@@ -1,15 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  Plus,
-  Trash2,
-  Package,
-  ScanLine,
-  Pencil,
-  Tags,
-  AlertTriangle,
-  ClipboardPaste,
-} from "lucide-react";
+import { Plus, Trash2, Package, ScanLine, Pencil, Tags, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,30 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { BarcodeScanner } from "@/components/barcode-scanner";
-import { ProductInfoCard } from "@/components/product-info-card";
 import { CategoryManager, useCategories } from "@/components/category-manager";
 import { UNITS, daysUntil, expiryStatus } from "@/lib/units";
-import { PasteItemsDialog } from "@/components/paste-items-dialog";
-import {
-  lookupProduct,
-  saveProductToBase,
-  sectionFor,
-  SECTION_LABEL,
-  type ProductSection,
-  type BarcodeProduct,
-} from "@/lib/barcode";
-import { SHOPPING_CATEGORIES } from "@/lib/kotiva";
 
 type Item = {
   id: string;
@@ -80,14 +54,10 @@ function Items() {
   const [open, setOpen] = useState(false);
   const [catsOpen, setCatsOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
-  const [scanned, setScanned] = useState<BarcodeProduct | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...emptyForm });
   const [q, setQ] = useState("");
-  const [pasteOpen, setPasteOpen] = useState(false);
-  const [pasteSaving, setPasteSaving] = useState(false);
-  const [scanSection, setScanSection] = useState<ProductSection | null>(null);
   const [filterCat, setFilterCat] = useState<string>("all");
 
   const load = () =>
@@ -104,11 +74,7 @@ function Items() {
     if (!user) return;
     const channel = supabase
       .channel("items")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "fridge_items", filter: `user_id=eq.${user.id}` },
-        () => load(),
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "fridge_items", filter: `user_id=eq.${user.id}` }, () => load())
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -161,24 +127,6 @@ function Items() {
     setSaving(false);
 
     if (error) return toast.error(error.message);
-
-    // Alimenta a base compartilhada de códigos de barras
-    if (payload.barcode) {
-      const categoryName = payload.category ?? "Outros";
-      const known = (SHOPPING_CATEGORIES as readonly string[]).includes(categoryName)
-        ? categoryName
-        : "Outros";
-      await saveProductToBase({
-        code: payload.barcode,
-        name: payload.name,
-        category: known,
-        section: scanSection ?? sectionFor(known),
-        unit: payload.unit,
-        userId: user.id,
-      });
-    }
-
-    setScanSection(null);
     toast.success(editingId ? "Item atualizado" : "Item adicionado");
     setOpen(false);
     setEditingId(null);
@@ -198,8 +146,7 @@ function Items() {
       items.filter(
         (i) =>
           i.name.toLowerCase().includes(q.toLowerCase()) &&
-          (filterCat === "all" ||
-            (filterCat === NO_CATEGORY ? !i.category_id : i.category_id === filterCat)),
+          (filterCat === "all" || (filterCat === NO_CATEGORY ? !i.category_id : i.category_id === filterCat)),
       ),
     [items, q, filterCat],
   );
@@ -216,9 +163,6 @@ function Items() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setPasteOpen(true)}>
-            <ClipboardPaste className="mr-2 h-4 w-4" /> Colar lista
-          </Button>
           <Button variant="outline" onClick={() => setCatsOpen(true)}>
             <Tags className="mr-2 h-4 w-4" /> Categorias
           </Button>
@@ -232,19 +176,13 @@ function Items() {
         <Card className="flex items-center gap-3 border-destructive/40 bg-destructive/10 p-4">
           <AlertTriangle className="h-5 w-5 shrink-0 text-destructive" />
           <p className="text-sm">
-            <strong>{expiredCount}</strong> produto(s) vencido(s). Atualize a validade ou remova da
-            geladeira.
+            <strong>{expiredCount}</strong> produto(s) vencido(s). Atualize a validade ou remova da geladeira.
           </p>
         </Card>
       )}
 
       <div className="flex flex-wrap gap-3">
-        <Input
-          placeholder="Buscar item..."
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          className="max-w-xs"
-        />
+        <Input placeholder="Buscar item..." value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
         <Select value={filterCat} onValueChange={setFilterCat}>
           <SelectTrigger className="w-52">
             <SelectValue placeholder="Todas as categorias" />
@@ -265,9 +203,7 @@ function Items() {
         <Card className="flex flex-col items-center gap-3 p-16 text-center">
           <Package className="h-12 w-12 text-muted-foreground/50" />
           <p className="text-muted-foreground">
-            {items.length === 0
-              ? "Sua geladeira está vazia. Adicione o primeiro item!"
-              : "Nenhum item encontrado."}
+            {items.length === 0 ? "Sua geladeira está vazia. Adicione o primeiro item!" : "Nenhum item encontrado."}
           </p>
         </Card>
       ) : (
@@ -286,20 +222,10 @@ function Items() {
                     {i.category && <p className="text-xs text-muted-foreground">{i.category}</p>}
                   </div>
                   <div className="flex shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openEdit(i)}
-                      aria-label={`Editar ${i.name}`}
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => openEdit(i)} aria-label={`Editar ${i.name}`}>
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => remove(i.id)}
-                      aria-label={`Remover ${i.name}`}
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => remove(i.id)} aria-label={`Remover ${i.name}`}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
@@ -308,13 +234,9 @@ function Items() {
                   <Badge variant="outline">
                     {i.quantity} {i.unit}
                   </Badge>
-                  {status === "expired" && (
-                    <Badge variant="destructive">Vencido há {Math.abs(days ?? 0)}d</Badge>
-                  )}
+                  {status === "expired" && <Badge variant="destructive">Vencido há {Math.abs(days ?? 0)}d</Badge>}
                   {status === "critical" && <Badge variant="destructive">Vence em {days}d</Badge>}
-                  {status === "soon" && (
-                    <Badge className="bg-warning text-warning-foreground">Vence em {days}d</Badge>
-                  )}
+                  {status === "soon" && <Badge className="bg-warning text-warning-foreground">Vence em {days}d</Badge>}
                   {status === "ok" && <Badge variant="secondary">Vence em {days}d</Badge>}
                 </div>
                 {i.notes && <p className="mt-2 text-xs text-muted-foreground">{i.notes}</p>}
@@ -336,22 +258,14 @@ function Items() {
             <DialogTitle>{editingId ? "Editar item" : "Adicionar item"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
-            {scanned && <ProductInfoCard product={scanned} onDismiss={() => setScanned(null)} />}
             <div>
               <Label>Nome *</Label>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                maxLength={120}
-              />
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={120} />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label>Categoria</Label>
-                <Select
-                  value={form.category_id}
-                  onValueChange={(v) => setForm({ ...form, category_id: v })}
-                >
+                <Select value={form.category_id} onValueChange={(v) => setForm({ ...form, category_id: v })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sem categoria" />
                   </SelectTrigger>
@@ -368,17 +282,8 @@ function Items() {
               <div>
                 <Label>Código de barras</Label>
                 <div className="flex gap-2">
-                  <Input
-                    value={form.barcode}
-                    onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    onClick={() => setScanOpen(true)}
-                    aria-label="Escanear"
-                  >
+                  <Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} />
+                  <Button type="button" size="icon" variant="outline" onClick={() => setScanOpen(true)} aria-label="Escanear">
                     <ScanLine className="h-4 w-4" />
                   </Button>
                 </div>
@@ -414,29 +319,16 @@ function Items() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Fabricação</Label>
-                <Input
-                  type="date"
-                  value={form.manufactured_at}
-                  onChange={(e) => setForm({ ...form, manufactured_at: e.target.value })}
-                />
+                <Input type="date" value={form.manufactured_at} onChange={(e) => setForm({ ...form, manufactured_at: e.target.value })} />
               </div>
               <div>
                 <Label>Validade</Label>
-                <Input
-                  type="date"
-                  value={form.expires_at}
-                  onChange={(e) => setForm({ ...form, expires_at: e.target.value })}
-                />
+                <Input type="date" value={form.expires_at} onChange={(e) => setForm({ ...form, expires_at: e.target.value })} />
               </div>
             </div>
             <div>
               <Label>Observações</Label>
-              <Textarea
-                rows={2}
-                value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                maxLength={500}
-              />
+              <Textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} maxLength={500} />
             </div>
             <Button onClick={save} className="w-full" disabled={saving}>
               {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Adicionar"}
@@ -445,60 +337,13 @@ function Items() {
         </DialogContent>
       </Dialog>
 
-      <PasteItemsDialog
-        open={pasteOpen}
-        onOpenChange={setPasteOpen}
-        saving={pasteSaving}
-        title="Colar e separar produtos"
-        onConfirm={async (parsed) => {
-          if (!user) return;
-          setPasteSaving(true);
-          const { error } = await supabase.from("fridge_items").insert(
-            parsed.map((p) => ({
-              user_id: user.id,
-              name: p.name,
-              quantity: p.quantity,
-              unit: p.unit,
-            })),
-          );
-          setPasteSaving(false);
-          if (error) {
-            toast.error(error.message);
-            return;
-          }
-          toast.success(`${parsed.length} produto(s) adicionados`);
-          setPasteOpen(false);
-          load();
-        }}
-      />
-
       <CategoryManager open={catsOpen} onOpenChange={setCatsOpen} categories={categories} />
       <BarcodeScanner
         open={scanOpen}
         onOpenChange={setScanOpen}
-        onDetected={async (code) => {
+        onDetected={(code) => {
           setForm((f) => ({ ...f, barcode: code }));
-          const product = await lookupProduct(code, undefined, user?.id);
-          setScanned(product);
-          if (product.name) {
-            const cat = categories.find(
-              (c) => c.name.toLowerCase() === product.category.toLowerCase(),
-            );
-            setScanSection(product.section);
-            setForm((f) => ({
-              ...f,
-              barcode: code,
-              name: product.name,
-              unit: product.unit || f.unit,
-              category_id: cat?.id ?? f.category_id,
-            }));
-            toast.success(`${product.name} · ${SECTION_LABEL[product.section]}`);
-          } else {
-            setScanSection(null);
-            toast.warning(
-              "Produto não encontrado na base — cadastre e ele ficará salvo para todos",
-            );
-          }
+          toast.success(`Código lido: ${code}`);
         }}
       />
     </div>

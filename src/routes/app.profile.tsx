@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -39,13 +39,6 @@ function Profile() {
         <h1 className="font-display text-3xl font-extrabold">Perfil</h1>
         <p className="text-muted-foreground">Gerencie suas informações pessoais.</p>
       </div>
-      <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
-        <div>
-          <div className="font-display font-bold">Assinatura</div>
-          <p className="text-sm text-muted-foreground">Veja seu plano, assine ou troque de plano quando quiser.</p>
-        </div>
-        <Button asChild variant="outline"><Link to="/app/plan">Gerenciar plano</Link></Button>
-      </Card>
       <Card className="p-6">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">

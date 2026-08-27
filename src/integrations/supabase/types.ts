@@ -14,60 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_audit_log: {
-        Row: {
-          action: string
-          actor_email: string | null
-          actor_id: string
-          created_at: string
-          details: Json
-          id: string
-          target_email: string | null
-          target_user_id: string | null
-        }
-        Insert: {
-          action: string
-          actor_email?: string | null
-          actor_id: string
-          created_at?: string
-          details?: Json
-          id?: string
-          target_email?: string | null
-          target_user_id?: string | null
-        }
-        Update: {
-          action?: string
-          actor_email?: string | null
-          actor_id?: string
-          created_at?: string
-          details?: Json
-          id?: string
-          target_email?: string | null
-          target_user_id?: string | null
-        }
-        Relationships: []
-      }
-      admin_invites: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          invited_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          invited_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          invited_by?: string | null
-        }
-        Relationships: []
-      }
       categories: {
         Row: {
           color: string | null
@@ -500,48 +446,6 @@ export type Database = {
         }
         Relationships: []
       }
-      product_barcodes: {
-        Row: {
-          brand: string | null
-          category: string
-          code: string
-          created_at: string
-          created_by: string | null
-          default_unit: string
-          id: string
-          name: string
-          section: string
-          updated_at: string
-          verified: boolean
-        }
-        Insert: {
-          brand?: string | null
-          category?: string
-          code: string
-          created_at?: string
-          created_by?: string | null
-          default_unit?: string
-          id?: string
-          name: string
-          section?: string
-          updated_at?: string
-          verified?: boolean
-        }
-        Update: {
-          brand?: string | null
-          category?: string
-          code?: string
-          created_at?: string
-          created_by?: string | null
-          default_unit?: string
-          id?: string
-          name?: string
-          section?: string
-          updated_at?: string
-          verified?: boolean
-        }
-        Relationships: []
-      }
       product_catalog: {
         Row: {
           barcode: string
@@ -599,75 +503,6 @@ export type Database = {
           display_name?: string | null
           id?: string
           updated_at?: string
-        }
-        Relationships: []
-      }
-      purchase_history: {
-        Row: {
-          category: string | null
-          created_at: string
-          id: string
-          name: string
-          normalized_name: string
-          purchased_at: string
-          quantity: number
-          unit: string | null
-          unit_price: number
-          user_id: string
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string
-          id?: string
-          name: string
-          normalized_name: string
-          purchased_at?: string
-          quantity?: number
-          unit?: string | null
-          unit_price?: number
-          user_id: string
-        }
-        Update: {
-          category?: string | null
-          created_at?: string
-          id?: string
-          name?: string
-          normalized_name?: string
-          purchased_at?: string
-          quantity?: number
-          unit?: string | null
-          unit_price?: number
-          user_id?: string
-        }
-        Relationships: []
-      }
-      rate_limits: {
-        Row: {
-          bucket: string
-          count: number
-          created_at: string
-          id: string
-          identifier: string
-          updated_at: string
-          window_start: string
-        }
-        Insert: {
-          bucket: string
-          count?: number
-          created_at?: string
-          id?: string
-          identifier: string
-          updated_at?: string
-          window_start?: string
-        }
-        Update: {
-          bucket?: string
-          count?: number
-          created_at?: string
-          id?: string
-          identifier?: string
-          updated_at?: string
-          window_start?: string
         }
         Relationships: []
       }
@@ -784,36 +619,6 @@ export type Database = {
         }
         Relationships: []
       }
-      shopping_presets: {
-        Row: {
-          created_at: string
-          icon: string | null
-          id: string
-          items: Json
-          name: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          icon?: string | null
-          id?: string
-          items?: Json
-          name: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          icon?: string | null
-          id?: string
-          items?: Json
-          name?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       subscriptions: {
         Row: {
           created_at: string
@@ -850,33 +655,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_chart_colors: {
-        Row: {
-          colors: Json
-          created_at: string
-          id: string
-          scope: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          colors?: Json
-          created_at?: string
-          id?: string
-          scope: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          colors?: Json
-          created_at?: string
-          id?: string
-          scope?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       user_roles: {
         Row: {
           id: string
@@ -895,63 +673,11 @@ export type Database = {
         }
         Relationships: []
       }
-      verification_codes: {
-        Row: {
-          attempts: number
-          channel: string
-          code_hash: string
-          consumed_at: string | null
-          created_at: string
-          destination: string
-          expires_at: string
-          id: string
-          meta: Json
-          purpose: string
-          updated_at: string
-        }
-        Insert: {
-          attempts?: number
-          channel: string
-          code_hash: string
-          consumed_at?: string | null
-          created_at?: string
-          destination: string
-          expires_at: string
-          id?: string
-          meta?: Json
-          purpose: string
-          updated_at?: string
-        }
-        Update: {
-          attempts?: number
-          channel?: string
-          code_hash?: string
-          consumed_at?: string | null
-          created_at?: string
-          destination?: string
-          expires_at?: string
-          id?: string
-          meta?: Json
-          purpose?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      check_rate_limit: {
-        Args: {
-          _bucket: string
-          _identifier: string
-          _limit: number
-          _window_seconds: number
-        }
-        Returns: boolean
-      }
-      has_premium: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
