@@ -1440,35 +1440,70 @@ a.dl {
       $('join-status').className = 'status err';
       return;
     }
+    if ($('btn-connect').disabled) return; // evita clique duplo enquanto conecta
+
     $('btn-connect').disabled = true;
     $('join-status').textContent = 'Conectando...';
     $('join-status').className = 'status';
 
+    // Garante que o botão SEMPRE volta a ficar clicável (nunca trava).
+    let openTimer = 0;
+    let joinTimer = 0;
+    const fail = (msg) => {
+      clearTimeout(openTimer);
+      clearTimeout(joinTimer);
+      $('btn-connect').disabled = false;
+      $('join-status').textContent = msg;
+      $('join-status').className = 'status err';
+    };
+
     if (state.peer) state.peer.destroy();
-    const peer = newPeer(undefined);
+    let peer;
+    try {
+      peer = newPeer(undefined);
+    } catch (err) {
+      console.error('Não consegui criar o Peer.', err);
+      $('btn-connect').disabled = false;
+      $('join-status').textContent =
+        'Não consegui iniciar o PeerJS. Verifique a conexão e recarregue a página.';
+      $('join-status').className = 'status err';
+      return;
+    }
     state.peer = peer;
 
+    let opened = false;
+    // 1) timeout: conectando ao servidor de sinalização (broker)
+    openTimer = setTimeout(() => {
+      if (!opened && !state.connected) {
+        fail('Não consegui conectar ao servidor de sinalização. Verifique a internet.');
+      }
+    }, JOIN_TIMEOUT_MS);
+
     peer.on('open', () => {
+      opened = true;
+      clearTimeout(openTimer);
+
       const conn = peer.connect(ID_PREFIX + code, {
         reliable: true,
         serialization: 'none', // nós cuidamos do binário
       });
       wireConnection(conn);
-      setTimeout(() => {
-        $('btn-connect').disabled = false;
+
+      // 2) timeout: TURN/ICE fechando a rota com o outro aparelho
+      joinTimer = setTimeout(() => {
         if (!state.connected) {
-          $('join-status').textContent =
-            'Tempo esgotado (30s). TURN em 4G/5G pode demorar — tente de novo.';
-          $('join-status').className = 'status err';
+          fail('Tempo esgotado (30s). TURN em 4G/5G pode demorar — tente de novo.');
         }
       }, JOIN_TIMEOUT_MS);
+
+      conn.on('open', () => {
+        clearTimeout(joinTimer);
+      });
     });
 
     peer.on('error', (err) => {
       console.error(err);
-      $('btn-connect').disabled = false;
-      $('join-status').textContent = peerErrorMessage(err);
-      $('join-status').className = 'status err';
+      fail(peerErrorMessage(err));
     });
   }
 

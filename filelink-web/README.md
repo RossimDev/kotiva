@@ -82,6 +82,15 @@ impede o furo de NAT.
 - Timeout de join: 30s (TURN demora mais que STUN).
 - Erros por tipo: `peer-unavailable`, `network`, `server-error`.
 - CDN reserva do PeerJS via jsDelivr se o unpkg falhar.
+- O botão **Conectar** **nunca mais trava:**
+  - Antes, o `setTimeout` que o reabilitava ficava **dentro** de `peer.on('open')` —
+    se o serviço de sinalização não respondesse, o botão ficava desabilitado para sempre.
+  - Agora há **dois** timeouts: um para o broker de sinalização (mesma mensagem clara
+    se a internet cair) e outro para o TURN/ICE fechar a rota. Qualquer erro reabilita
+    o botão e mostra a mensagem.
+  - Se o **PeerJS não carregar** (CDN fora), o clique avisa “Não consegui iniciar o
+    PeerJS — verifique a conexão e recarregue a página” em vez de travar o botão.
+  - Clique duplo é ignorado (`disabled`), evitando tentativas simultâneas.
 
 ### 6. Retry (tentar de novo)
 
