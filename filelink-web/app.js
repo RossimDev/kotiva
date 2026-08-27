@@ -23,6 +23,8 @@
   const ID_PREFIX = 'filelink-web-';
   const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sem I,O,0,1
   const JOIN_TIMEOUT_MS = 30000;
+  const MAX_SEND_RETRIES = 3; // tentativas ao colidir com buffer cheio/erros transitórios
+  const RETRY_BACKOFF_MS = [250, 600, 1200]; // espera crescente entre tentativas
 
   const PEER_CONFIG = {
     iceServers: [
@@ -191,8 +193,13 @@
         <button class="btn btn-tiny btn-danger-ghost" data-act="remove" data-id="${it.id}">Excluir</button>`;
     } else if (it.status === 'sending') {
       acts = `<button class="btn btn-tiny btn-warn-ghost" data-act="cancel" data-id="${it.id}">Cancelar</button>`;
+    } else if (it.status === 'error' || it.status === 'cancelled') {
+      // erro/cancelado: permite tentar de novo + excluir
+      acts = `
+        <button class="btn btn-tiny btn-ghost" data-act="retry" data-id="${it.id}">Tentar novamente</button>
+        <button class="btn btn-tiny btn-danger-ghost" data-act="remove" data-id="${it.id}">Excluir</button>`;
     } else {
-      // cancelado, erro ou enviado
+      // enviado
       acts = `<button class="btn btn-tiny btn-danger-ghost" data-act="remove" data-id="${it.id}">Excluir</button>`;
     }
     const showBar = it.status === 'sending' || it.status === 'pending';
@@ -292,6 +299,7 @@
   }
 
   const nextTick = () => new Promise((r) => setTimeout(r, 0));
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   /** Envia um arquivo em fatias, sem nunca bloquear a thread principal. */
   async function sendOne(item) {
@@ -340,20 +348,33 @@
         return;
       }
 
-      try {
-        state.dc.send(buf);
-      } catch (err) {
-        // canal cheio: espera e tenta de novo
-        console.warn('send falhou, aguardando buffer', err);
-        await waitForDrain();
+      // envia com retry/backoff em erros transitórios (buffer cheio, etc.)
+      let sent = false;
+      for (let attempt = 0; attempt <= MAX_SEND_RETRIES; attempt++) {
         try {
           state.dc.send(buf);
-        } catch (e2) {
-          item.status = 'error';
-          render();
-          toast(`Falha ao enviar "${file.name}"`, 'err');
-          return;
+          sent = true;
+          break;
+        } catch (err) {
+          console.warn(
+            `send falhou (tentativa ${attempt + 1}/${MAX_SEND_RETRIES + 1})`,
+            err,
+          );
+          await waitForDrain();
+          if (attempt < MAX_SEND_RETRIES) {
+            await sleep(
+              RETRY_BACKOFF_MS[Math.min(attempt, RETRY_BACKOFF_MS.length - 1)],
+            );
+          }
         }
+      }
+      if (!sent) {
+        // avisa o outro lado para descartar o parcial antes de marcar erro
+        sendCtl({ t: 'cancel', id: item.id });
+        item.status = 'error';
+        render();
+        toast(`Falha ao enviar "${file.name}"`, 'err');
+        return;
       }
 
       offset = end;
@@ -397,6 +418,10 @@
   function handleControl(msg) {
     switch (msg.t) {
       case 'start': {
+        // tentativa/reinício do mesmo arquivo: descarta parcial antigo
+        state.incoming = state.incoming.filter(
+          (i) => i.status !== 'receiving' || i.id !== msg.id,
+        );
         state.receiving = {
           id: msg.id,
           name: msg.name,
@@ -543,10 +568,14 @@
       state.connected = false;
       $('conn-status').textContent = 'Conexão encerrada';
       $('conn-status').className = 'status err';
-      // marca o que estava em trânsito
+      // marca o que estava em trânsito (permite tentar de novo depois)
       state.outgoing.forEach((i) => {
         if (i.status === 'sending') i.status = 'error';
       });
+      state.incoming.forEach((i) => {
+        if (i.status === 'receiving') i.status = 'error';
+      });
+      state.receiving = null;
       render();
       toast('Conexão encerrada', 'err');
     });
@@ -650,6 +679,7 @@
         sent: 0,
         status: 'pending',
         cancelRequested: false,
+        attempts: 0,
       });
     }
     render();
@@ -670,6 +700,22 @@
       it.cancelRequested = true;
       if (it.status === 'pending') it.status = 'cancelled';
       render();
+      return;
+    }
+
+    if (act === 'retry') {
+      const it = state.outgoing.find((i) => i.id === id);
+      if (!it || it.status === 'sending') return;
+      if (!state.connected || !state.dc || state.dc.readyState !== 'open') {
+        toast('Reconecte os aparelhos para tentar de novo', 'err');
+        return;
+      }
+      it.status = 'pending';
+      it.sent = 0;
+      it.cancelRequested = false;
+      it.attempts = (it.attempts || 0) + 1;
+      render();
+      pump();
       return;
     }
 
@@ -712,6 +758,12 @@
       } catch {
         toast('Não consegui copiar', 'err');
       }
+    });
+
+    $('btn-new-code').addEventListener('click', () => {
+      // se a conexão travou/falhou, o host pode gerar um código novo e tentar de novo
+      toast('Gerando novo código...', '');
+      startHost();
     });
 
     document.querySelectorAll('[data-back]').forEach((b) =>

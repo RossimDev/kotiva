@@ -83,6 +83,27 @@ impede o furo de NAT.
 - Erros por tipo: `peer-unavailable`, `network`, `server-error`.
 - CDN reserva do PeerJS via jsDelivr se o unpkg falhar.
 
+### 6. Retry (tentar de novo)
+
+Arquivos que **falharam** (status *Erro*) ou foram **cancelados** (status
+*Cancelado*) agora têm o botão **Tentar novamente**, além do **Excluir**.
+
+- Ao clicar em **Tentar novamente**, o item volta para a **Fila** e é reenviado
+  automaticamente. O lado receptor descarta qualquer parcial antigo do mesmo
+  arquivo antes de recomeçar (sem duplicar itens na lista de Recebidos).
+- Se a conexão estiver fechada, o botão avisa *“Reconecte os aparelhos para
+  tentar de novo”* em vez de falhar silenciosamente.
+- O envio agora tenta de novo sozinho em **erros transitórios** (buffer cheio)
+  com retry/backoff: até 3 tentativas extras com espera crescente (250 → 600 →
+  1200 ms). Só marca erro de verdade quando todas falham.
+- Quando um envio falha, o outro lado é avisado (`cancel`) para descartar o
+  parcial logo de cara — nada de lixo acumulado na lista de Recebidos.
+- Se o canal cair no meio de um envio/recepção, o que estava em trânsito vira
+  *Erro* e pode ser **Tentar novamente** depois de reconectar.
+- Na tela do **host**, o botão **Novo código** regenera o código na hora — útil
+  quando a negociação TURN/ICE travou e você quer tentar de novo sem voltar ao
+  início.
+
 ## Limitação conhecida
 
 O arquivo recebido é montado na memória do navegador antes de virar download.
