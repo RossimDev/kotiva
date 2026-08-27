@@ -1,4 +1,4 @@
-# 🔗 FileLink Web
+# FileLink Web
 
 Transferência de arquivos **direto de um aparelho para o outro** (P2P via WebRTC),
 rodando 100% no navegador. Nenhum arquivo passa por servidor: só o *handshake*

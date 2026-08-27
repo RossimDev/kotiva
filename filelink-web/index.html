@@ -15,26 +15,30 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <canvas id="gl-bg" aria-hidden="true"></canvas>
+    <div class="glow glow-a" aria-hidden="true"></div>
+    <div class="glow glow-b" aria-hidden="true"></div>
+
     <main class="wrap">
       <header class="head">
-        <h1>🔗 FileLink Web</h1>
+        <p class="brand-mark">P2P</p>
+        <h1>FileLink Web</h1>
         <p class="tagline">
           Transferência direta entre seus aparelhos, pelo navegador.
         </p>
       </header>
 
-      <!-- ============ TELA: INÍCIO ============ -->
       <section class="screen is-active" id="screen-home">
         <div class="choice">
           <button class="btn btn-primary btn-big" id="btn-host">
-            <span class="btn-ico">🖥️</span>
+            <span class="btn-ico ico-host" aria-hidden="true"></span>
             <span>
               <strong>Iniciar no computador</strong>
               <small>Gera um código para o outro aparelho</small>
             </span>
           </button>
           <button class="btn btn-ghost btn-big" id="btn-join">
-            <span class="btn-ico">📱</span>
+            <span class="btn-ico ico-join" aria-hidden="true"></span>
             <span>
               <strong>Conectar (celular)</strong>
               <small>Digite o código mostrado no outro aparelho</small>
@@ -43,7 +47,6 @@
         </div>
       </section>
 
-      <!-- ============ TELA: HOST ============ -->
       <section class="screen" id="screen-host">
         <p class="label">Código de conexão</p>
         <div class="code" id="host-code">------</div>
@@ -51,10 +54,9 @@
           <button class="btn btn-soft" id="btn-copy-code">Copiar código</button>
         </div>
         <p class="status" id="host-status">Aguardando conexão do celular...</p>
-        <button class="btn btn-link" data-back>⬅ Voltar</button>
+        <button class="btn btn-link" data-back>Voltar</button>
       </section>
 
-      <!-- ============ TELA: JOIN ============ -->
       <section class="screen" id="screen-join">
         <p class="label">Digite o código do computador</p>
         <input
@@ -71,20 +73,20 @@
         <div class="row">
           <button class="btn btn-primary" id="btn-connect">Conectar</button>
         </div>
-        <button class="btn btn-link" data-back>⬅ Voltar</button>
+        <button class="btn btn-link" data-back>Voltar</button>
       </section>
 
-      <!-- ============ TELA: TRANSFERÊNCIA ============ -->
       <section class="screen" id="screen-transfer">
-        <p class="status ok" id="conn-status">✅ Conectado</p>
+        <p class="status ok" id="conn-status">Conectado</p>
+        <p class="status" id="ice-status"></p>
 
         <div class="picker">
           <input id="file-input" type="file" multiple hidden />
           <button class="btn btn-primary btn-big" id="btn-pick">
-            <span class="btn-ico">📤</span>
+            <span class="btn-ico ico-send" aria-hidden="true"></span>
             <span>
               <strong>Enviar arquivo(s)</strong>
-              <small>Qualquer tipo: apk, pck, bin, zip, txt…</small>
+              <small>Qualquer tipo: apk, pck, bin, zip, txt</small>
             </span>
           </button>
           <div class="dropzone" id="dropzone">
@@ -92,7 +94,6 @@
           </div>
         </div>
 
-        <!-- Fila de envio -->
         <div class="panel" id="panel-queue" hidden>
           <div class="panel-head">
             <h2>Fila de envio <span class="count" id="queue-count">0</span></h2>
@@ -103,7 +104,6 @@
           <div class="groups" id="queue-groups"></div>
         </div>
 
-        <!-- Enviados -->
         <div class="panel" id="panel-sent" hidden>
           <div class="panel-head">
             <h2>Enviados <span class="count" id="sent-count">0</span></h2>
@@ -114,7 +114,6 @@
           <div class="groups" id="sent-groups"></div>
         </div>
 
-        <!-- Recebidos -->
         <div class="panel" id="panel-recv" hidden>
           <div class="panel-head">
             <h2>Recebidos <span class="count" id="recv-count">0</span></h2>
@@ -125,7 +124,7 @@
           <div class="groups" id="recv-groups"></div>
         </div>
 
-        <button class="btn btn-link" data-back>⬅ Voltar</button>
+        <button class="btn btn-link" data-back>Voltar</button>
       </section>
 
       <footer class="foot">
@@ -140,6 +139,11 @@
 
     <div class="toasts" id="toasts"></div>
 
+    <script
+      src="https://unpkg.com/three@0.160.0/build/three.min.js"
+      onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js'"
+    ></script>
+    <script src="./scene.js"></script>
     <script
       src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
       onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'"

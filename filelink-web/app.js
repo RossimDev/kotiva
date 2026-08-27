@@ -533,7 +533,7 @@
     conn.on('open', () => {
       state.connected = true;
       attachChannel(conn.dataChannel);
-      $('conn-status').textContent = '✅ Conectado';
+      $('conn-status').textContent = 'Conectado';
       $('conn-status').className = 'status ok';
       showScreen('screen-transfer');
       toast('Conectado!', 'ok');
@@ -541,7 +541,7 @@
     });
     conn.on('close', () => {
       state.connected = false;
-      $('conn-status').textContent = '⚠️ Conexão encerrada';
+      $('conn-status').textContent = 'Conexão encerrada';
       $('conn-status').className = 'status err';
       // marca o que estava em trânsito
       state.outgoing.forEach((i) => {
