@@ -1,0 +1,91 @@
+# 🔗 FileLink Web
+
+Transferência de arquivos **direto de um aparelho para o outro** (P2P via WebRTC),
+rodando 100% no navegador. Nenhum arquivo passa por servidor: só o *handshake*
+inicial usa um servidor público gratuito (broker do PeerJS).
+
+## O que foi corrigido nesta versão
+
+### 1. Travamento com `.pck`, `.apk`, `.bin` e outros binários
+
+O congelamento **não era causado pelo tipo do arquivo** — era causado pelo tamanho
+e pela forma como o arquivo era lido/enviado. Três causas, todas corrigidas:
+
+| Problema | Correção |
+|---|---|
+| O arquivo inteiro era lido para a memória de uma vez | Agora lê em fatias de 64 KB com `file.slice().arrayBuffer()` |
+| Todas as fatias eram empurradas no canal sem checar `bufferedAmount` | Backpressure real: pausa acima de 8 MB no buffer, volta abaixo de 1 MB |
+| O laço de envio nunca devolvia o controle ao navegador | `await` no event loop a cada ~120 ms → a UI nunca congela |
+
+### 2. Suporte a qualquer tipo de arquivo
+
+- Zero dependência de MIME type. `.pck`, `.apk` e `.bin` têm `file.type` **vazio** —
+  qualquer lógica baseada em MIME quebrava neles.
+- A camada de serialização do PeerJS (que refragmenta e corrompe binários grandes)
+  foi contornada: falamos direto com o `RTCDataChannel`, enviando controle como
+  JSON (string) e conteúdo como `ArrayBuffer` puro.
+- No download, o Blob é criado como `application/octet-stream`, o que força o
+  download em vez de o navegador tentar abrir/renderizar o arquivo.
+
+### 3. Excluir e cancelar
+
+- **Na fila (não enviados):** botões **Cancelar** e **Excluir**.
+- **Enviando agora:** botão **Cancelar** (avisa o outro lado, que descarta o parcial).
+- **Enviados:** botão **Excluir** para sair da lista.
+- **Recebidos:** botão **Excluir** (também libera o `ObjectURL` da memória).
+- Ações em massa: *Cancelar tudo* e *Limpar lista*.
+
+### 4. Listas separadas por tipo
+
+Fila, Enviados e Recebidos são agrupados **por extensão**: APK só com APK,
+BIN só com BIN, TXT só com TXT, e assim por diante. Cada grupo mostra o
+selo da extensão e a contagem de arquivos. Arquivos sem extensão vão para
+um grupo "SEM EXTENSÃO" no fim.
+
+## Rodando localmente
+
+```bash
+cd filelink-web
+python3 -m http.server 3000
+```
+
+Abra `http://localhost:3000` em dois aparelhos na mesma rede (ou em duas abas).
+
+## Deploy na Vercel
+
+É um site estático — sem build. Basta apontar o projeto para esta pasta:
+
+```bash
+cd filelink-web
+vercel --prod
+```
+
+Ou, no painel da Vercel: **Root Directory** = `filelink-web`, Framework Preset =
+**Other**, sem comando de build.
+
+## Como usar
+
+1. No computador: **Iniciar no computador** → aparece um código de 6 caracteres.
+2. No celular: **Conectar (celular)** → digite o código → **Conectar**.
+3. Envie arquivos pelo botão ou arrastando para a área tracejada. Funciona nos
+   dois sentidos ao mesmo tempo.
+
+### 5. PC ↔ celular no 4G/5G (CGNAT)
+
+O Peer passa a ser criado com `PEER_CONFIG.iceServers`: STUN do Google/Twilio
+e TURN público `openrelay.metered.ca` (portas 80, 443 e `443?transport=tcp`,
+usuário/senha `openrelayproject`). Sem TURN, NAT simétrico das operadoras
+impede o furo de NAT.
+
+- `peer.on('disconnected')` chama `peer.reconnect()` se ainda estiver desconectado.
+- Estado ICE (`oniceconnectionstatechange`) aparece na tela (“Negociando rota de rede…”).
+- Timeout de join: 30s (TURN demora mais que STUN).
+- Erros por tipo: `peer-unavailable`, `network`, `server-error`.
+- CDN reserva do PeerJS via jsDelivr se o unpkg falhar.
+
+## Limitação conhecida
+
+O arquivo recebido é montado na memória do navegador antes de virar download.
+Em celulares, arquivos acima de ~1–2 GB podem estourar a memória da aba. O envio
+não tem esse limite (é lido em fatias). Para suportar arquivos gigantes na
+recepção seria necessário usar a File System Access API ou StreamSaver.js.
